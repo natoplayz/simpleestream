@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simple Stream</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: #fff;
+      padding: 20px;
+      margin: 0;
+    }
+    h1 {
+      text-align: center;
+    }
+    #searchContainer {
+      max-width: 600px;
+      margin: auto;
+      position: relative;
+    }
+    #searchInput {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+    }
+    #suggestions {
+      position: absolute;
+      width: 100%;
+      background: #222;
+      border-radius: 6px;
+      z-index: 10;
+    }
+    .suggestion {
+      padding: 10px;
+      border-bottom: 1px solid #333;
+      cursor: pointer;
+    }
+    .suggestion:hover {
+      background: #333;
+    }
+    iframe {
+      width: 100%;
+      aspect-ratio: 16/9;
+      border: none;
+      margin-top: 20px;
+    }
+    #seasonContainer, #episodesContainer, #similarContainer {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .btn {
+      background: #222;
+      color: white;
+      padding: 10px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+    }
+    .btn:hover {
+      background: #444;
+    }
+    select {
+      padding: 10px;
+      background: #222;
+      color: #fff;
+      border-radius: 6px;
+      border: none;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>SimpleeStream</h1>
+
+<div id="searchContainer">
+  <input id="searchInput" type="text" placeholder="Search for a movie or TV show..." autocomplete="off" />
+  <div id="suggestions"></div>
+</div>
+
+<iframe id="player" allowfullscreen></iframe>
+
+<div id="seasonContainer" style="display:none;">
+  <label for="seasonSelect">Season:</label>
+  <select id="seasonSelect"></select>
+</div>
+
+<div id="episodesContainer"></div>
+<div id="similarContainer"></div>
+
+<script>
+const apiKey = 'b3aa6957'; // Replace this with your OMDb API key
+const input = document.getElementById('searchInput');
+const suggestions = document.getElementById('suggestions');
+const player = document.getElementById('player');
+const episodesContainer = document.getElementById('episodesContainer');
+const seasonSelect = document.getElementById('seasonSelect');
+const seasonContainer = document.getElementById('seasonContainer');
+const similarContainer = document.getElementById('similarContainer');
+let currentTVShowID = null;
+
+let debounceTimer;
+
+input.addEventListener('input', () => {
+  const query = input.value.trim();
+  clearTimeout(debounceTimer);
+  if (query.length === 0) {
+    suggestions.innerHTML = '';
+    return;
+  }
+  debounceTimer = setTimeout(() => {
+    fetchSuggestions(query);
+  }, 300); // debounce
+});
+
+async function fetchSuggestions(query) {
+  const res = await fetch(`https://www.omdbapi.com/?apikey=${apiKey}&s=${encodeURIComponent(query)}`);
+  const data = await res.json();
+  suggestions.innerHTML = '';
+
+  if (data.Search) {
+    data.Search.forEach(item => {
+      const div = document.createElement('div');
+      div.classList.add('suggestion');
+      div.textContent = `${item.Title} (${item.Year})`;
+      div.onclick = () => selectSuggestion(item);
+      suggestions.appendChild(div);
+    });
+  } else {
+    const div = document.createElement('div');
+    div.classList.add('suggestion');
+    div.textContent = 'No results found';
+    suggestions.appendChild(div);
+  }
+}
+
+function selectSuggestion(item) {
+  suggestions.innerHTML = '';
+  input.value = `${item.Title} (${item.Year})`;
+  const imdbID = item.imdbID;
+  if (item.Type === 'movie') {
+    loadMovie(imdbID);
+  } else if (item.Type === 'series') {
+    loadTVShow(imdbID);
+  } else {
+    alert('Unsupported type: ' + item.Type);
+  }
+}
+
+function loadMovie(imdbID) {
+  player.src = `https://vidsrc.me/embed/${imdbID}`;
+  episodesContainer.innerHTML = '';
+  seasonContainer.style.display = 'none';
+  loadSimilar(imdbID);
+}
+
+async function loadTVShow(imdbID) {
+      currentTVShowID = imdbID;
+      seasonContainer.style.display = 'block';
+      seasonSelect.innerHTML = '';
+      episodesContainer.innerHTML = '';
+      similarContainer.innerHTML = '';
+
+      const seriesRes = await fetch(`https://www.omdbapi.com/?apikey=${apiKey}&i=${imdbID}&type=series`);
+      const seriesData = await seriesRes.json();
+      const totalSeasons = parseInt(seriesData.totalSeasons);
+
+      for (let s = 1; s <= totalSeasons; s++) {
+        const option = document.createElement('option');
+        option.value = s;
+        option.textContent = `Season ${s}`;
+        seasonSelect.appendChild(option);
+      }
+
+      seasonSelect.onchange = () => {
+        loadEpisodes(imdbID, parseInt(seasonSelect.value));
+      };
+
+      loadEpisodes(imdbID, 1);
+    }
+
+    async function loadEpisodes(imdbID, season) {
+      const episodesRes = await fetch(`https://www.omdbapi.com/?apikey=${apiKey}&i=${imdbID}&Season=${season}`);
+      const episodesData = await episodesRes.json();
+
+      if (episodesData.Episodes && episodesData.Episodes.length > 0) {
+        player.src = `https://vidsrc.me/embed/tv?imdb=${imdbID}&season=${season}&episode=1`;
+      }
+
+      episodesContainer.innerHTML = '';
+      episodesData.Episodes.forEach((ep, index) => {
+        const btn = document.createElement('button');
+        btn.className = 'btn';
+        btn.textContent = `Episode ${index + 1}`;
+        btn.onclick = () => {
+          player.src = `https://vidsrc.me/embed/tv?imdb=${imdbID}&season=${season}&episode=${index + 1}`;
+        };
+        episodesContainer.appendChild(btn);
+      });
+    }
+
+function loadSimilar(imdbID) {
+  similarContainer.innerHTML = '';
+  for (let i = 1; i <= 4; i++) {
+    const fakeId = `tt${parseInt(imdbID.slice(2)) + i}`;
+    const btn = document.createElement('button');
+    btn.className = 'btn';
+    btn.textContent = `Similar Movie ${i}`;
+    btn.onclick = () => loadMovie(fakeId);
+    similarContainer.appendChild(btn);
+  }
+}
+</script>
+
+</body>
+</html>
