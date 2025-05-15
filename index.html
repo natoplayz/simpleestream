@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Simple Stream</title>
+  <title>SimpleeStream</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -65,6 +65,9 @@
     }
     .btn:hover {
       background: #444;
+    }
+    .btn.selected {
+    background: #444;
     }
     select {
       padding: 10px;
@@ -186,25 +189,44 @@ async function loadTVShow(imdbID) {
       loadEpisodes(imdbID, 1);
     }
 
-    async function loadEpisodes(imdbID, season) {
-      const episodesRes = await fetch(`https://www.omdbapi.com/?apikey=${apiKey}&i=${imdbID}&Season=${season}`);
-      const episodesData = await episodesRes.json();
+    let currentEpisodeButton = null;
 
-      if (episodesData.Episodes && episodesData.Episodes.length > 0) {
-        player.src = `https://vidsrc.me/embed/tv?imdb=${imdbID}&season=${season}&episode=1`;
+async function loadEpisodes(imdbID, season) {
+  const episodesRes = await fetch(`https://www.omdbapi.com/?apikey=${apiKey}&i=${imdbID}&Season=${season}`);
+  const episodesData = await episodesRes.json();
+
+  if (episodesData.Episodes && episodesData.Episodes.length > 0) {
+    player.src = `https://vidsrc.me/embed/tv?imdb=${imdbID}&season=${season}&episode=1`;
+  }
+
+  episodesContainer.innerHTML = '';
+  currentEpisodeButton = null;
+
+  episodesData.Episodes.forEach((ep, index) => {
+    const btn = document.createElement('button');
+    btn.className = 'btn';
+    btn.textContent = `Episode ${index + 1}`;
+    
+    btn.onclick = () => {
+      player.src = `https://vidsrc.me/embed/tv?imdb=${imdbID}&season=${season}&episode=${index + 1}`;
+
+      // Highlight selected button
+      if (currentEpisodeButton) {
+        currentEpisodeButton.classList.remove('selected');
       }
+      btn.classList.add('selected');
+      currentEpisodeButton = btn;
+    };
 
-      episodesContainer.innerHTML = '';
-      episodesData.Episodes.forEach((ep, index) => {
-        const btn = document.createElement('button');
-        btn.className = 'btn';
-        btn.textContent = `Episode ${index + 1}`;
-        btn.onclick = () => {
-          player.src = `https://vidsrc.me/embed/tv?imdb=${imdbID}&season=${season}&episode=${index + 1}`;
-        };
-        episodesContainer.appendChild(btn);
-      });
+    // Auto-select the first episode on load
+    if (index === 0) {
+      btn.classList.add('selected');
+      currentEpisodeButton = btn;
     }
+
+    episodesContainer.appendChild(btn);
+  });
+}
 
 function loadSimilar(imdbID) {
   similarContainer.innerHTML = '';
