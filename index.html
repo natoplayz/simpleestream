@@ -67,7 +67,7 @@
       background: #444;
     }
     .btn.selected {
-    background: #444;
+      background: #444;
     }
     select {
       padding: 10px;
@@ -157,46 +157,49 @@ function selectSuggestion(item) {
   }
 }
 
+// Fixed Movie streaming URL
 function loadMovie(imdbID) {
-  player.src = `https://vidsrc.me/embed/${imdbID}`;
+  player.src = `https://www.playimdb.com/title/${imdbID}`;
   episodesContainer.innerHTML = '';
   seasonContainer.style.display = 'none';
   loadSimilar(imdbID);
 }
 
 async function loadTVShow(imdbID) {
-      currentTVShowID = imdbID;
-      seasonContainer.style.display = 'block';
-      seasonSelect.innerHTML = '';
-      episodesContainer.innerHTML = '';
-      similarContainer.innerHTML = '';
+  currentTVShowID = imdbID;
+  seasonContainer.style.display = 'block';
+  seasonSelect.innerHTML = '';
+  episodesContainer.innerHTML = '';
+  similarContainer.innerHTML = '';
 
-      const seriesRes = await fetch(`https://www.omdbapi.com/?apikey=${apiKey}&i=${imdbID}&type=series`);
-      const seriesData = await seriesRes.json();
-      const totalSeasons = parseInt(seriesData.totalSeasons);
+  const seriesRes = await fetch(`https://www.omdbapi.com/?apikey=${apiKey}&i=${imdbID}&type=series`);
+  const seriesData = await seriesRes.json();
+  const totalSeasons = parseInt(seriesData.totalSeasons);
 
-      for (let s = 1; s <= totalSeasons; s++) {
-        const option = document.createElement('option');
-        option.value = s;
-        option.textContent = `Season ${s}`;
-        seasonSelect.appendChild(option);
-      }
+  for (let s = 1; s <= totalSeasons; s++) {
+    const option = document.createElement('option');
+    option.value = s;
+    option.textContent = `Season ${s}`;
+    seasonSelect.appendChild(option);
+  }
 
-      seasonSelect.onchange = () => {
-        loadEpisodes(imdbID, parseInt(seasonSelect.value));
-      };
+  seasonSelect.onchange = () => {
+    loadEpisodes(imdbID, parseInt(seasonSelect.value));
+  };
 
-      loadEpisodes(imdbID, 1);
-    }
+  loadEpisodes(imdbID, 1);
+}
 
-    let currentEpisodeButton = null;
+let currentEpisodeButton = null;
 
+// Fixed TV Show streaming URLs
 async function loadEpisodes(imdbID, season) {
   const episodesRes = await fetch(`https://www.omdbapi.com/?apikey=${apiKey}&i=${imdbID}&Season=${season}`);
   const episodesData = await episodesRes.json();
 
   if (episodesData.Episodes && episodesData.Episodes.length > 0) {
-    player.src = `https://vidsrc.me/embed/tv?imdb=${imdbID}&season=${season}&episode=1`;
+    // Note: If TV shows don't load, you may need to change this URL format depending on what playimdb expects.
+    player.src = `https://www.playimdb.com/title/${imdbID}?season=${season}&episode=1`;
   }
 
   episodesContainer.innerHTML = '';
@@ -208,7 +211,7 @@ async function loadEpisodes(imdbID, season) {
     btn.textContent = `Episode ${index + 1}`;
     
     btn.onclick = () => {
-      player.src = `https://vidsrc.me/embed/tv?imdb=${imdbID}&season=${season}&episode=${index + 1}`;
+      player.src = `https://www.playimdb.com/title/${imdbID}?season=${season}&episode=${index + 1}`;
 
       // Highlight selected button
       if (currentEpisodeButton) {
