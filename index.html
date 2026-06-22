@@ -92,31 +92,41 @@
     }
 
     #reportProblemBtn {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      z-index: 9999;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: #222;
-      color: #fff;
-      border: 1px solid #333;
-      border-radius: 999px;
-      padding: 12px 18px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-    }
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 2147483647;
+  display: block;
+  background: #222;
+  color: white;
+  padding: 12px 18px;
+  border-radius: 999px;
+  text-decoration: none;
+  font-weight: bold;
+  border: 1px solid #444;
+}
 
-    #reportProblemBtn:hover {
-      background: #333;
-    }
+#reportProblemBtn:hover {
+  background: #333;
+}
+
+#disclaimer {
+  background: #008000;
+  color: white;
+  padding: 12px;
+  text-align: center;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  font-weight: bold;
+}
   </style>
 </head>
 
 <body>
+
+<div id="disclaimer">
+  ✅ Video playback and streaming has been updated and should be working properly.
+</div>
 
 <h1>SimpleeStream</h1>
 
@@ -134,6 +144,13 @@
 
 <div id="episodesContainer"></div>
 <div id="similarContainer"></div>
+<a
+  id="reportProblemBtn"
+  href="https://docs.google.com/forms/d/e/1FAIpQLSfeujs0epQgn80vrJM5ZkH0fMoRDabe809LUx_7dPyNXWowhQ/viewform"
+  target="_blank"
+>
+  ⚠️ Report a Problem
+</a>
 
 <script>
 const apiKey = "b3aa6957";
@@ -200,7 +217,13 @@ function selectSuggestion(item) {
 function loadMovie(imdbID) {
   seasonContainer.style.display = "none";
   episodesContainer.innerHTML = "";
-  player.src = `https://vidsrc.me/embed/${imdbID}`;
+
+  player.src =
+    `https://vidsrc.ru/movie/${imdbID}` +
+    `?autoplay=true` +
+    `&colour=00ff9d` +
+    `&pausescreen=true`;
+
   loadSimilar(imdbID);
 }
 
@@ -240,7 +263,11 @@ async function loadEpisodes(imdbID, season) {
 
   if (!data.Episodes) return;
 
-  player.src = `https://vsembed.su/embed/tv?imdb=${imdbID}&season=${season}&episode=1`;
+  player.src =
+  `https://vidsrc.ru/tv/${imdbID}/${season}/1` +
+  `?autoplay=true` +
+  `&autonextepisode=true` +
+  `&colour=00ff9d`;
 
   data.Episodes.forEach((ep, index) => {
     const btn = document.createElement("button");
@@ -248,7 +275,40 @@ async function loadEpisodes(imdbID, season) {
     btn.textContent = `Episode ${index + 1}`;
 
     btn.onclick = () => {
-      player.src = `https://vsembed.su/embed/tv?imdb=${imdbID}&season=${season}&episode=${index + 1}`;
+      player.src =
+  `https://vidsrc.ru/tv/${imdbID}/${season}/${index + 1}` +
+  `?autoplay=true` +
+  `&autonextepisode=true` +
+  `&colour=00ff9d`;
+
+let currentEpisodeButton = null;
+
+const STORAGE_KEY = "watch_progress";
+let watchProgress = JSON.parse(
+  localStorage.getItem(STORAGE_KEY) || "{}"
+);
+
+window.addEventListener("message", (event) => {
+  if (event.data?.type === "MEDIA_DATA") {
+    const mediaData = event.data.data;
+
+    if (
+      mediaData.id &&
+      (mediaData.type === "movie" || mediaData.type === "tv")
+    ) {
+      watchProgress[mediaData.id] = {
+        ...watchProgress[mediaData.id],
+        ...mediaData,
+        last_updated: Date.now()
+      };
+
+      localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(watchProgress)
+      );
+    }
+  }
+});
 
       if (currentEpisodeButton) {
         currentEpisodeButton.classList.remove("selected");
@@ -289,13 +349,4 @@ async function loadSimilar(imdbID) {
   });
 }
 </script>
-
-<button
-  id="reportProblemBtn"
-  onclick="window.open('https://docs.google.com/forms/d/e/1FAIpQLSfeujs0epQgn80vrJM5ZkH0fMoRDabe809LUx_7dPyNXWowhQ/viewform', '_blank')"
->
-  ⚠️ Report a Problem
-</button>
-
-</body>
 </html>
