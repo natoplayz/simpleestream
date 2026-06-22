@@ -1,322 +1,442 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>SimpleeStream</title>
-
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #111;
-      color: #fff;
-      padding: 20px;
-      margin: 0;
-    }
-
-    h1 {
-      text-align: center;
-    }
-
-    #searchContainer {
-      max-width: 600px;
-      margin: auto;
-      position: relative;
-    }
-
-    #searchInput {
-      width: 100%;
-      padding: 12px;
-      font-size: 16px;
-      border: none;
-      border-radius: 6px;
-    }
-
-    #suggestions {
-      position: absolute;
-      width: 100%;
-      background: #222;
-      border-radius: 6px;
-      z-index: 10;
-    }
-
-    .suggestion {
-      padding: 10px;
-      border-bottom: 1px solid #333;
-      cursor: pointer;
-    }
-
-    .suggestion:hover {
-      background: #333;
-    }
-
-    iframe {
-      width: 100%;
-      aspect-ratio: 16/9;
-      border: none;
-      margin-top: 20px;
-    }
-
-    #seasonContainer, #episodesContainer, #similarContainer {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 10px;
-      margin-top: 20px;
-    }
-
-    .btn {
-      background: #222;
-      color: white;
-      padding: 10px;
-      border-radius: 6px;
-      border: none;
-      cursor: pointer;
-    }
-
-    .btn:hover {
-      background: #444;
-    }
-
-    .btn.selected {
-      background: #444;
-    }
-
-    select {
-      padding: 10px;
-      background: #222;
-      color: #fff;
-      border-radius: 6px;
-      border: none;
-      font-size: 16px;
-    }
-
-    #reportProblemBtn {
-  position: fixed;
-  bottom: 20px;
-  left: 20px;
-  z-index: 2147483647;
-  display: block;
-  background: #222;
-  color: white;
-  padding: 12px 18px;
-  border-radius: 999px;
-  text-decoration: none;
-  font-weight: bold;
-  border: 1px solid #444;
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SimpleeStream</title>
+<style>
+:root{
+  --bg:#0b0b0f;
+  --card:#17171d;
+  --card-hover:#21212a;
+  --text:#fff;
+  --muted:#9a9aa3;
+  --accent:#00ff9d;
 }
 
-#reportProblemBtn:hover {
-  background: #333;
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
 }
 
-#disclaimer {
-  background: #008000;
-  color: white;
-  padding: 12px;
-  text-align: center;
-  border-radius: 6px;
-  margin-bottom: 20px;
-  font-weight: bold;
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  padding-bottom:110px;
 }
-  </style>
+
+#hero{
+  position:relative;
+  height:60vh;
+  min-height:420px;
+  overflow:hidden;
+}
+
+#heroBackdrop{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+#hero::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(
+    to top,
+    rgba(11,11,15,1) 5%,
+    rgba(11,11,15,.5) 45%,
+    rgba(11,11,15,.2) 100%
+  );
+}
+
+.hero-content{
+  position:absolute;
+  bottom:32px;
+  left:20px;
+  right:20px;
+  z-index:2;
+}
+
+.hero-content h1{
+  margin:0 0 10px;
+  font-size:2rem;
+}
+
+.hero-content p{
+  color:#ddd;
+  max-width:600px;
+  line-height:1.4;
+}
+
+.play-btn{
+  margin-top:18px;
+  border:none;
+  background:var(--accent);
+  color:#000;
+  font-weight:700;
+  padding:14px 24px;
+  border-radius:999px;
+  cursor:pointer;
+}
+
+.section{
+  margin-top:28px;
+}
+
+.section h2{
+  padding:0 16px;
+  font-size:1.2rem;
+}
+
+.row{
+  display:flex;
+  overflow-x:auto;
+  gap:12px;
+  padding:0 16px;
+  scrollbar-width:none;
+}
+
+.row::-webkit-scrollbar{
+  display:none;
+}
+
+.card{
+  min-width:140px;
+  cursor:pointer;
+}
+
+.card img{
+  width:140px;
+  height:210px;
+  object-fit:cover;
+  border-radius:14px;
+  transition:.2s;
+}
+
+.card img:hover{
+  transform:scale(1.04);
+}
+
+.card p{
+  font-size:.9rem;
+  margin-top:8px;
+  color:#ddd;
+}
+
+#playerContainer{
+  display:none;
+  padding:16px;
+}
+
+#player{
+  width:100%;
+  aspect-ratio:16/9;
+  border:none;
+  border-radius:16px;
+  background:#000;
+}
+
+#seasonContainer{
+  display:none;
+  margin-top:20px;
+}
+
+select{
+  width:100%;
+  padding:14px;
+  background:var(--card);
+  border:none;
+  color:#fff;
+  border-radius:12px;
+}
+
+#episodesContainer{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-top:16px;
+}
+
+.episode-btn{
+  background:var(--card);
+  color:#fff;
+  border:none;
+  border-radius:10px;
+  padding:12px 16px;
+}
+
+.episode-btn.selected{
+  background:var(--accent);
+  color:#000;
+}
+
+#searchContainer{
+  position:fixed;
+  bottom:78px;
+  left:16px;
+  right:16px;
+  z-index:1000;
+}
+
+#searchInput{
+  width:100%;
+  padding:16px 18px;
+  border:none;
+  border-radius:999px;
+  background:rgba(28,28,35,.95);
+  color:#fff;
+  font-size:16px;
+  backdrop-filter:blur(20px);
+}
+
+#suggestions{
+  margin-top:10px;
+  background:var(--card);
+  border-radius:16px;
+  overflow:hidden;
+  max-height:300px;
+  overflow-y:auto;
+}
+
+.suggestion{
+  padding:14px 18px;
+  border-bottom:1px solid #2a2a33;
+}
+
+.bottom-nav{
+  position:fixed;
+  bottom:0;
+  left:0;
+  width:100%;
+  height:70px;
+  background:rgba(17,17,23,.95);
+  backdrop-filter:blur(20px);
+  display:flex;
+  justify-content:space-around;
+  align-items:center;
+  border-top:1px solid #262631;
+  z-index:1000;
+}
+
+.nav-item{
+  color:var(--muted);
+  font-size:1.5rem;
+}
+
+.nav-item.active{
+  color:var(--accent);
+}
+
+#reportProblemBtn{
+  position:fixed;
+  top:16px;
+  right:16px;
+  z-index:1000;
+  background:rgba(0,0,0,.5);
+  color:#fff;
+  text-decoration:none;
+  padding:10px 14px;
+  border-radius:999px;
+  backdrop-filter:blur(10px);
+}
+</style>
 </head>
-
-<body>
-
-<div id="disclaimer">
-  ✅ Video playback and streaming has been updated and should be working properly.
+<body> 
+<section id="hero">
+  <img id="heroBackdrop">
+  <div class="hero-content">
+    <h1 id="heroTitle">Loading...</h1>
+    <p id="heroOverview"></p>
+    <button class="play-btn" id="heroPlay">▶ Watch Now</button>
+  </div>
+</section>
+<div id="playerContainer">
+  <iframe
+    id="player"
+    allow="autoplay; fullscreen; picture-in-picture"
+    allowfullscreen
+    webkitallowfullscreen>
+  </iframe>
+  <div id="seasonContainer">
+    <select id="seasonSelect"></select>
+  </div>
+  <div id="episodesContainer"></div>
 </div>
-
-<h1>SimpleeStream</h1>
-
+<section class="section">
+  <h2>🔥 Trending Now</h2>
+  <div class="row" id="trendingRow"></div>
+</section>
+<section class="section">
+  <h2>🎬 Popular Movies</h2>
+  <div class="row" id="movieRow"></div>
+</section>
+<section class="section">
+  <h2>📺 Popular TV Shows</h2>
+  <div class="row" id="tvRow"></div>
+</section>
 <div id="searchContainer">
-  <input id="searchInput" type="text" placeholder="Search for a movie or TV show..." autocomplete="off" />
+  <input
+    id="searchInput"
+    type="text"
+    placeholder="Search movies and TV shows..."
+    autocomplete="off">
   <div id="suggestions"></div>
 </div>
-
-<iframe
-  id="player"
-  allow="autoplay; fullscreen; picture-in-picture"
-  allowfullscreen
-  webkitallowfullscreen
-  mozallowfullscreen
-></iframe>
-
-<div id="seasonContainer" style="display:none;">
-  <label for="seasonSelect">Season:</label>
-  <select id="seasonSelect"></select>
-</div>
-
-<div id="episodesContainer"></div>
-<div id="similarContainer"></div>
-<a
-  id="reportProblemBtn"
-  href="https://docs.google.com/forms/d/e/1FAIpQLSfeujs0epQgn80vrJM5ZkH0fMoRDabe809LUx_7dPyNXWowhQ/viewform"
-  target="_blank"
->
-  ⚠️ Report a Problem
-</a>
-
+<nav class="bottom-nav">
+  <div class="nav-item active">🏠</div>
+  <div class="nav-item">🔍</div>
+  <div class="nav-item">📚</div>
+</nav>
 <script>
-const apiKey = "b3aa6957";
+const omdbKey = "b3aa6957";
+const tmdbKey = "17526e62c11655583951ac051f6fbf18";
 
-const input = document.getElementById("searchInput");
-const suggestions = document.getElementById("suggestions");
 const player = document.getElementById("player");
-const episodesContainer = document.getElementById("episodesContainer");
-const seasonSelect = document.getElementById("seasonSelect");
+const playerContainer = document.getElementById("playerContainer");
+
+const searchInput = document.getElementById("searchInput");
+const suggestions = document.getElementById("suggestions");
+
 const seasonContainer = document.getElementById("seasonContainer");
-const similarContainer = document.getElementById("similarContainer");
+const seasonSelect = document.getElementById("seasonSelect");
+const episodesContainer = document.getElementById("episodesContainer");
 
-let debounceTimer;
-let currentTVShowID = null;
 let currentEpisodeButton = null;
+let debounce;
 
-input.addEventListener("input", () => {
-  const query = input.value.trim();
-  clearTimeout(debounceTimer);
+loadHero();
+loadTrending();
+loadPopularMovies();
+loadPopularTV();
+
+searchInput.addEventListener("input", () => {
+  clearTimeout(debounce);
+
+  const query = searchInput.value.trim();
 
   if (!query) {
     suggestions.innerHTML = "";
     return;
   }
 
-  debounceTimer = setTimeout(() => fetchSuggestions(query), 300);
+  debounce = setTimeout(() => search(query), 300);
 });
 
-async function fetchSuggestions(query) {
-  const res = await fetch(`https://www.omdbapi.com/?apikey=${apiKey}&s=${encodeURIComponent(query)}`);
+async function search(query){
+
+  const res = await fetch(
+    `https://www.omdbapi.com/?apikey=${omdbKey}&s=${encodeURIComponent(query)}`
+  );
+
   const data = await res.json();
 
   suggestions.innerHTML = "";
 
-  if (data.Response === "False" || !data.Search) {
-    suggestions.innerHTML = "<div class='suggestion'>No results</div>";
-    return;
-  }
+  if (!data.Search) return;
 
   data.Search.forEach(item => {
+
     const div = document.createElement("div");
+
     div.className = "suggestion";
     div.textContent = `${item.Title} (${item.Year})`;
-    div.onclick = () => selectSuggestion(item);
+
+    div.onclick = () => {
+      searchInput.value = item.Title;
+      suggestions.innerHTML = "";
+
+      if(item.Type === "movie"){
+        loadMovie(item.imdbID);
+      } else {
+        loadTV(item.imdbID);
+      }
+    };
+
     suggestions.appendChild(div);
   });
 }
 
-function selectSuggestion(item) {
-  suggestions.innerHTML = "";
-  input.value = `${item.Title} (${item.Year})`;
+function loadMovie(imdbID){
 
-  player.src = "";
-  episodesContainer.innerHTML = "";
-  similarContainer.innerHTML = "";
-
-  if (item.Type === "movie") {
-    loadMovie(item.imdbID);
-  } else if (item.Type === "series") {
-    loadTVShow(item.imdbID);
-  }
-}
-
-function loadMovie(imdbID) {
   seasonContainer.style.display = "none";
   episodesContainer.innerHTML = "";
 
-  player.src =
-    `https://vidsrc.ru/movie/${imdbID}` +
-    `?autoplay=true` +
-    `&colour=00ff9d` +
-    `&pausescreen=true`;
+  playerContainer.style.display = "block";
 
-  loadSimilar(imdbID);
+  player.src =
+    `https://vidsrc.ru/movie/${imdbID}?autoplay=true&colour=00ff9d`;
+
+  window.scrollTo({
+    top: playerContainer.offsetTop - 20,
+    behavior: "smooth"
+  });
 }
 
-async function loadTVShow(imdbID) {
-  currentTVShowID = imdbID;
+async function loadTV(imdbID){
 
-  seasonContainer.style.display = "block";
-  episodesContainer.innerHTML = "";
-  similarContainer.innerHTML = "";
-  seasonSelect.innerHTML = "";
+  playerContainer.style.display = "block";
 
-  const res = await fetch(`https://www.omdbapi.com/?apikey=${apiKey}&i=${imdbID}&type=series`);
+  const res = await fetch(
+    `https://www.omdbapi.com/?apikey=${omdbKey}&i=${imdbID}`
+  );
+
   const data = await res.json();
 
-  const totalSeasons = parseInt(data.totalSeasons || 0);
+  const seasons = parseInt(data.totalSeasons || 0);
 
-  for (let i = 1; i <= totalSeasons; i++) {
-    const opt = document.createElement("option");
-    opt.value = i;
-    opt.textContent = `Season ${i}`;
-    seasonSelect.appendChild(opt);
+  seasonContainer.style.display = "block";
+  seasonSelect.innerHTML = "";
+
+  for(let i = 1; i <= seasons; i++){
+
+    const option = document.createElement("option");
+
+    option.value = i;
+    option.textContent = `Season ${i}`;
+
+    seasonSelect.appendChild(option);
   }
 
   seasonSelect.onchange = () => loadEpisodes(imdbID, seasonSelect.value);
 
-  if (totalSeasons > 0) {
-    loadEpisodes(imdbID, 1);
-  }
+  loadEpisodes(imdbID, 1);
+
+  window.scrollTo({
+    top: playerContainer.offsetTop - 20,
+    behavior: "smooth"
+  });
 }
 
-async function loadEpisodes(imdbID, season) {
-  const res = await fetch(`https://www.omdbapi.com/?apikey=${apiKey}&i=${imdbID}&Season=${season}`);
+async function loadEpisodes(imdbID, season){
+
+  const res = await fetch(
+    `https://www.omdbapi.com/?apikey=${omdbKey}&i=${imdbID}&Season=${season}`
+  );
+
   const data = await res.json();
 
   episodesContainer.innerHTML = "";
-  currentEpisodeButton = null;
-
-  if (!data.Episodes) return;
 
   player.src =
-  `https://vidsrc.ru/tv/${imdbID}/${season}/1` +
-  `?autoplay=true` +
-  `&autonextepisode=true` +
-  `&colour=00ff9d`;
+    `https://vidsrc.ru/tv/${imdbID}/${season}/1?autoplay=true`;
 
-  data.Episodes.forEach((ep, index) => {
+  data.Episodes?.forEach((episode, index) => {
+
     const btn = document.createElement("button");
-    btn.className = "btn";
-    btn.textContent = `Episode ${index + 1}`;
+
+    btn.className = "episode-btn";
+    btn.textContent = index + 1;
 
     btn.onclick = () => {
+
       player.src =
-  `https://vidsrc.ru/tv/${imdbID}/${season}/${index + 1}` +
-  `?autoplay=true` +
-  `&autonextepisode=true` +
-  `&colour=00ff9d`;
+        `https://vidsrc.ru/tv/${imdbID}/${season}/${index + 1}?autoplay=true`;
 
-let currentEpisodeButton = null;
-
-const STORAGE_KEY = "watch_progress";
-let watchProgress = JSON.parse(
-  localStorage.getItem(STORAGE_KEY) || "{}"
-);
-
-window.addEventListener("message", (event) => {
-  if (event.data?.type === "MEDIA_DATA") {
-    const mediaData = event.data.data;
-
-    if (
-      mediaData.id &&
-      (mediaData.type === "movie" || mediaData.type === "tv")
-    ) {
-      watchProgress[mediaData.id] = {
-        ...watchProgress[mediaData.id],
-        ...mediaData,
-        last_updated: Date.now()
-      };
-
-      localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify(watchProgress)
-      );
-    }
-  }
-});
-
-      if (currentEpisodeButton) {
+      if(currentEpisodeButton){
         currentEpisodeButton.classList.remove("selected");
       }
 
@@ -324,7 +444,7 @@ window.addEventListener("message", (event) => {
       currentEpisodeButton = btn;
     };
 
-    if (index === 0) {
+    if(index === 0){
       btn.classList.add("selected");
       currentEpisodeButton = btn;
     }
@@ -333,26 +453,98 @@ window.addEventListener("message", (event) => {
   });
 }
 
-async function loadSimilar(imdbID) {
-  similarContainer.innerHTML = "";
+async function loadHero(){
 
-  const res = await fetch(`https://www.omdbapi.com/?apikey=${apiKey}&s=movie`);
+  const res = await fetch(
+    `https://api.themoviedb.org/3/trending/movie/day?api_key=${tmdbKey}`
+  );
+
   const data = await res.json();
 
-  if (!data.Search) return;
+  const movie = data.results[0];
 
-  data.Search.slice(0, 4).forEach(item => {
-    const btn = document.createElement("button");
-    btn.className = "btn";
-    btn.textContent = item.Title;
+  document.getElementById("heroBackdrop").src =
+    `https://image.tmdb.org/t/p/original${movie.backdrop_path}`;
 
-    btn.onclick = () => {
-      input.value = item.Title;
-      selectSuggestion(item);
+  document.getElementById("heroTitle").textContent = movie.title;
+
+  document.getElementById("heroOverview").textContent =
+    movie.overview;
+
+  document.getElementById("heroPlay").onclick = async () => {
+
+    const details = await fetch(
+      `https://api.themoviedb.org/3/movie/${movie.id}/external_ids?api_key=${tmdbKey}`
+    );
+
+    const ids = await details.json();
+
+    loadMovie(ids.imdb_id);
+  };
+}
+
+async function populateRow(endpoint, elementId, type){
+
+  const res = await fetch(endpoint);
+  const data = await res.json();
+
+  const row = document.getElementById(elementId);
+
+  data.results.slice(0,15).forEach(async item => {
+
+    const card = document.createElement("div");
+
+    card.className = "card";
+
+    card.innerHTML = `
+      <img src="https://image.tmdb.org/t/p/w500${item.poster_path}">
+      <p>${item.title || item.name}</p>
+    `;
+
+    card.onclick = async () => {
+
+      const mediaType = type === "tv" ? "tv" : "movie";
+
+      const details = await fetch(
+        `https://api.themoviedb.org/3/${mediaType}/${item.id}/external_ids?api_key=${tmdbKey}`
+      );
+
+      const ids = await details.json();
+
+      if(type === "tv"){
+        loadTV(ids.imdb_id);
+      } else {
+        loadMovie(ids.imdb_id);
+      }
     };
 
-    similarContainer.appendChild(btn);
+    row.appendChild(card);
   });
 }
+
+function loadTrending(){
+  populateRow(
+    `https://api.themoviedb.org/3/trending/all/week?api_key=${tmdbKey}`,
+    "trendingRow",
+    "movie"
+  );
+}
+
+function loadPopularMovies(){
+  populateRow(
+    `https://api.themoviedb.org/3/movie/popular?api_key=${tmdbKey}`,
+    "movieRow",
+    "movie"
+  );
+}
+
+function loadPopularTV(){
+  populateRow(
+    `https://api.themoviedb.org/3/tv/popular?api_key=${tmdbKey}`,
+    "tvRow",
+    "tv"
+  );
+}
 </script>
+</body>
 </html>
