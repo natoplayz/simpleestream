@@ -1,442 +1,256 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SimpleeStream</title>
-<style>
-:root{
-  --bg:#0b0b0f;
-  --card:#17171d;
-  --card-hover:#21212a;
-  --text:#fff;
-  --muted:#9a9aa3;
-  --accent:#00ff9d;
-}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SimpleeStream</title>
 
-*{
-  box-sizing:border-box;
-  -webkit-tap-highlight-color:transparent;
-}
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: #fff;
+      padding: 20px;
+      margin: 0;
+    }
 
-body{
-  margin:0;
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  background:var(--bg);
-  color:var(--text);
-  padding-bottom:110px;
-}
+    h1 {
+      text-align: center;
+    }
 
-#hero{
-  position:relative;
-  height:60vh;
-  min-height:420px;
-  overflow:hidden;
-}
+    #searchContainer {
+      max-width: 600px;
+      margin: auto;
+      position: relative;
+    }
 
-#heroBackdrop{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-}
+    #searchInput {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+    }
 
-#hero::after{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:linear-gradient(
-    to top,
-    rgba(11,11,15,1) 5%,
-    rgba(11,11,15,.5) 45%,
-    rgba(11,11,15,.2) 100%
-  );
-}
+    #suggestions {
+      position: absolute;
+      width: 100%;
+      background: #222;
+      border-radius: 6px;
+      z-index: 10;
+    }
 
-.hero-content{
-  position:absolute;
-  bottom:32px;
-  left:20px;
-  right:20px;
-  z-index:2;
-}
+    .suggestion {
+      padding: 10px;
+      border-bottom: 1px solid #333;
+      cursor: pointer;
+    }
 
-.hero-content h1{
-  margin:0 0 10px;
-  font-size:2rem;
-}
+    .suggestion:hover {
+      background: #333;
+    }
 
-.hero-content p{
-  color:#ddd;
-  max-width:600px;
-  line-height:1.4;
-}
+    iframe {
+      width: 100%;
+      aspect-ratio: 16/9;
+      border: none;
+      margin-top: 20px;
+    }
 
-.play-btn{
-  margin-top:18px;
-  border:none;
-  background:var(--accent);
-  color:#000;
-  font-weight:700;
-  padding:14px 24px;
-  border-radius:999px;
-  cursor:pointer;
-}
+    #seasonContainer, #episodesContainer, #similarContainer {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 20px;
+    }
 
-.section{
-  margin-top:28px;
-}
+    .btn {
+      background: #222;
+      color: white;
+      padding: 10px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+    }
 
-.section h2{
-  padding:0 16px;
-  font-size:1.2rem;
-}
+    .btn:hover {
+      background: #444;
+    }
 
-.row{
-  display:flex;
-  overflow-x:auto;
-  gap:12px;
-  padding:0 16px;
-  scrollbar-width:none;
-}
+    .btn.selected {
+      background: #444;
+    }
 
-.row::-webkit-scrollbar{
-  display:none;
-}
+    select {
+      padding: 10px;
+      background: #222;
+      color: #fff;
+      border-radius: 6px;
+      border: none;
+      font-size: 16px;
+    }
 
-.card{
-  min-width:140px;
-  cursor:pointer;
-}
+    #reportProblemBtn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #222;
+      color: #fff;
+      border: 1px solid #333;
+      border-radius: 999px;
+      padding: 12px 18px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    }
 
-.card img{
-  width:140px;
-  height:210px;
-  object-fit:cover;
-  border-radius:14px;
-  transition:.2s;
-}
-
-.card img:hover{
-  transform:scale(1.04);
-}
-
-.card p{
-  font-size:.9rem;
-  margin-top:8px;
-  color:#ddd;
-}
-
-#playerContainer{
-  display:none;
-  padding:16px;
-}
-
-#player{
-  width:100%;
-  aspect-ratio:16/9;
-  border:none;
-  border-radius:16px;
-  background:#000;
-}
-
-#seasonContainer{
-  display:none;
-  margin-top:20px;
-}
-
-select{
-  width:100%;
-  padding:14px;
-  background:var(--card);
-  border:none;
-  color:#fff;
-  border-radius:12px;
-}
-
-#episodesContainer{
-  display:flex;
-  flex-wrap:wrap;
-  gap:10px;
-  margin-top:16px;
-}
-
-.episode-btn{
-  background:var(--card);
-  color:#fff;
-  border:none;
-  border-radius:10px;
-  padding:12px 16px;
-}
-
-.episode-btn.selected{
-  background:var(--accent);
-  color:#000;
-}
-
-#searchContainer{
-  position:fixed;
-  bottom:78px;
-  left:16px;
-  right:16px;
-  z-index:1000;
-}
-
-#searchInput{
-  width:100%;
-  padding:16px 18px;
-  border:none;
-  border-radius:999px;
-  background:rgba(28,28,35,.95);
-  color:#fff;
-  font-size:16px;
-  backdrop-filter:blur(20px);
-}
-
-#suggestions{
-  margin-top:10px;
-  background:var(--card);
-  border-radius:16px;
-  overflow:hidden;
-  max-height:300px;
-  overflow-y:auto;
-}
-
-.suggestion{
-  padding:14px 18px;
-  border-bottom:1px solid #2a2a33;
-}
-
-.bottom-nav{
-  position:fixed;
-  bottom:0;
-  left:0;
-  width:100%;
-  height:70px;
-  background:rgba(17,17,23,.95);
-  backdrop-filter:blur(20px);
-  display:flex;
-  justify-content:space-around;
-  align-items:center;
-  border-top:1px solid #262631;
-  z-index:1000;
-}
-
-.nav-item{
-  color:var(--muted);
-  font-size:1.5rem;
-}
-
-.nav-item.active{
-  color:var(--accent);
-}
-
-#reportProblemBtn{
-  position:fixed;
-  top:16px;
-  right:16px;
-  z-index:1000;
-  background:rgba(0,0,0,.5);
-  color:#fff;
-  text-decoration:none;
-  padding:10px 14px;
-  border-radius:999px;
-  backdrop-filter:blur(10px);
-}
-</style>
+    #reportProblemBtn:hover {
+      background: #333;
+    }
+  </style>
 </head>
-<body> 
-<section id="hero">
-  <img id="heroBackdrop">
-  <div class="hero-content">
-    <h1 id="heroTitle">Loading...</h1>
-    <p id="heroOverview"></p>
-    <button class="play-btn" id="heroPlay">▶ Watch Now</button>
-  </div>
-</section>
-<div id="playerContainer">
-  <iframe
-    id="player"
-    allow="autoplay; fullscreen; picture-in-picture"
-    allowfullscreen
-    webkitallowfullscreen>
-  </iframe>
-  <div id="seasonContainer">
-    <select id="seasonSelect"></select>
-  </div>
-  <div id="episodesContainer"></div>
-</div>
-<section class="section">
-  <h2>🔥 Trending Now</h2>
-  <div class="row" id="trendingRow"></div>
-</section>
-<section class="section">
-  <h2>🎬 Popular Movies</h2>
-  <div class="row" id="movieRow"></div>
-</section>
-<section class="section">
-  <h2>📺 Popular TV Shows</h2>
-  <div class="row" id="tvRow"></div>
-</section>
+
+<body>
+
+<h1>SimpleeStream</h1>
+
 <div id="searchContainer">
-  <input
-    id="searchInput"
-    type="text"
-    placeholder="Search movies and TV shows..."
-    autocomplete="off">
+  <input id="searchInput" type="text" placeholder="Search for a movie or TV show..." autocomplete="off" />
   <div id="suggestions"></div>
 </div>
-<nav class="bottom-nav">
-  <div class="nav-item active">🏠</div>
-  <div class="nav-item">🔍</div>
-  <div class="nav-item">📚</div>
-</nav>
+
+<iframe id="player" allowfullscreen></iframe>
+
+<div id="seasonContainer" style="display:none;">
+  <label for="seasonSelect">Season:</label>
+  <select id="seasonSelect"></select>
+</div>
+
+<div id="episodesContainer"></div>
+<div id="similarContainer"></div>
+
 <script>
-const omdbKey = "b3aa6957";
-const tmdbKey = "17526e62c11655583951ac051f6fbf18";
+const apiKey = "b3aa6957";
 
-const player = document.getElementById("player");
-const playerContainer = document.getElementById("playerContainer");
-
-const searchInput = document.getElementById("searchInput");
+const input = document.getElementById("searchInput");
 const suggestions = document.getElementById("suggestions");
-
-const seasonContainer = document.getElementById("seasonContainer");
-const seasonSelect = document.getElementById("seasonSelect");
+const player = document.getElementById("player");
 const episodesContainer = document.getElementById("episodesContainer");
+const seasonSelect = document.getElementById("seasonSelect");
+const seasonContainer = document.getElementById("seasonContainer");
+const similarContainer = document.getElementById("similarContainer");
 
+let debounceTimer;
+let currentTVShowID = null;
 let currentEpisodeButton = null;
-let debounce;
 
-loadHero();
-loadTrending();
-loadPopularMovies();
-loadPopularTV();
-
-searchInput.addEventListener("input", () => {
-  clearTimeout(debounce);
-
-  const query = searchInput.value.trim();
+input.addEventListener("input", () => {
+  const query = input.value.trim();
+  clearTimeout(debounceTimer);
 
   if (!query) {
     suggestions.innerHTML = "";
     return;
   }
 
-  debounce = setTimeout(() => search(query), 300);
+  debounceTimer = setTimeout(() => fetchSuggestions(query), 300);
 });
 
-async function search(query){
-
-  const res = await fetch(
-    `https://www.omdbapi.com/?apikey=${omdbKey}&s=${encodeURIComponent(query)}`
-  );
-
+async function fetchSuggestions(query) {
+  const res = await fetch(`https://www.omdbapi.com/?apikey=${apiKey}&s=${encodeURIComponent(query)}`);
   const data = await res.json();
 
   suggestions.innerHTML = "";
 
-  if (!data.Search) return;
+  if (data.Response === "False" || !data.Search) {
+    suggestions.innerHTML = "<div class='suggestion'>No results</div>";
+    return;
+  }
 
   data.Search.forEach(item => {
-
     const div = document.createElement("div");
-
     div.className = "suggestion";
     div.textContent = `${item.Title} (${item.Year})`;
-
-    div.onclick = () => {
-      searchInput.value = item.Title;
-      suggestions.innerHTML = "";
-
-      if(item.Type === "movie"){
-        loadMovie(item.imdbID);
-      } else {
-        loadTV(item.imdbID);
-      }
-    };
-
+    div.onclick = () => selectSuggestion(item);
     suggestions.appendChild(div);
   });
 }
 
-function loadMovie(imdbID){
+function selectSuggestion(item) {
+  suggestions.innerHTML = "";
+  input.value = `${item.Title} (${item.Year})`;
 
-  seasonContainer.style.display = "none";
+  player.src = "";
   episodesContainer.innerHTML = "";
+  similarContainer.innerHTML = "";
 
-  playerContainer.style.display = "block";
-
-  player.src =
-    `https://vsembed.su/movie/${imdbID}?autoplay=true&colour=00ff9d`;
-
-  window.scrollTo({
-    top: playerContainer.offsetTop - 20,
-    behavior: "smooth"
-  });
+  if (item.Type === "movie") {
+    loadMovie(item.imdbID);
+  } else if (item.Type === "series") {
+    loadTVShow(item.imdbID);
+  }
 }
 
-async function loadTV(imdbID){
+function loadMovie(imdbID) {
+  seasonContainer.style.display = "none";
+  episodesContainer.innerHTML = "";
+  player.src = `https://vidsrc.me/embed/${imdbID}`;
+  loadSimilar(imdbID);
+}
 
-  playerContainer.style.display = "block";
-
-  const res = await fetch(
-    `https://www.omdbapi.com/?apikey=${omdbKey}&i=${imdbID}`
-  );
-
-  const data = await res.json();
-
-  const seasons = parseInt(data.totalSeasons || 0);
+async function loadTVShow(imdbID) {
+  currentTVShowID = imdbID;
 
   seasonContainer.style.display = "block";
+  episodesContainer.innerHTML = "";
+  similarContainer.innerHTML = "";
   seasonSelect.innerHTML = "";
 
-  for(let i = 1; i <= seasons; i++){
+  const res = await fetch(`https://www.omdbapi.com/?apikey=${apiKey}&i=${imdbID}&type=series`);
+  const data = await res.json();
 
-    const option = document.createElement("option");
+  const totalSeasons = parseInt(data.totalSeasons || 0);
 
-    option.value = i;
-    option.textContent = `Season ${i}`;
-
-    seasonSelect.appendChild(option);
+  for (let i = 1; i <= totalSeasons; i++) {
+    const opt = document.createElement("option");
+    opt.value = i;
+    opt.textContent = `Season ${i}`;
+    seasonSelect.appendChild(opt);
   }
 
   seasonSelect.onchange = () => loadEpisodes(imdbID, seasonSelect.value);
 
-  loadEpisodes(imdbID, 1);
-
-  window.scrollTo({
-    top: playerContainer.offsetTop - 20,
-    behavior: "smooth"
-  });
+  if (totalSeasons > 0) {
+    loadEpisodes(imdbID, 1);
+  }
 }
 
-async function loadEpisodes(imdbID, season){
-
-  const res = await fetch(
-    `https://www.omdbapi.com/?apikey=${omdbKey}&i=${imdbID}&Season=${season}`
-  );
-
+async function loadEpisodes(imdbID, season) {
+  const res = await fetch(`https://www.omdbapi.com/?apikey=${apiKey}&i=${imdbID}&Season=${season}`);
   const data = await res.json();
 
   episodesContainer.innerHTML = "";
+  currentEpisodeButton = null;
 
-  player.src =
-    `https://vsembed.su/tv/${imdbID}/${season}/1?autoplay=true`;
+  if (!data.Episodes) return;
 
-  data.Episodes?.forEach((episode, index) => {
+  player.src = `https://vsembed.su/embed/tv?imdb=${imdbID}&season=${season}&episode=1`;
 
+  data.Episodes.forEach((ep, index) => {
     const btn = document.createElement("button");
-
-    btn.className = "episode-btn";
-    btn.textContent = index + 1;
+    btn.className = "btn";
+    btn.textContent = `Episode ${index + 1}`;
 
     btn.onclick = () => {
+      player.src = `https://vsembed.su/embed/tv?imdb=${imdbID}&season=${season}&episode=${index + 1}`;
 
-      player.src =
-        `https://vsembed.su/tv/${imdbID}/${season}/${index + 1}?autoplay=true`;
-
-      if(currentEpisodeButton){
+      if (currentEpisodeButton) {
         currentEpisodeButton.classList.remove("selected");
       }
 
@@ -444,7 +258,7 @@ async function loadEpisodes(imdbID, season){
       currentEpisodeButton = btn;
     };
 
-    if(index === 0){
+    if (index === 0) {
       btn.classList.add("selected");
       currentEpisodeButton = btn;
     }
@@ -453,98 +267,35 @@ async function loadEpisodes(imdbID, season){
   });
 }
 
-async function loadHero(){
+async function loadSimilar(imdbID) {
+  similarContainer.innerHTML = "";
 
-  const res = await fetch(
-    `https://api.themoviedb.org/3/trending/movie/day?api_key=${tmdbKey}`
-  );
-
+  const res = await fetch(`https://www.omdbapi.com/?apikey=${apiKey}&s=movie`);
   const data = await res.json();
 
-  const movie = data.results[0];
+  if (!data.Search) return;
 
-  document.getElementById("heroBackdrop").src =
-    `https://image.tmdb.org/t/p/original${movie.backdrop_path}`;
+  data.Search.slice(0, 4).forEach(item => {
+    const btn = document.createElement("button");
+    btn.className = "btn";
+    btn.textContent = item.Title;
 
-  document.getElementById("heroTitle").textContent = movie.title;
-
-  document.getElementById("heroOverview").textContent =
-    movie.overview;
-
-  document.getElementById("heroPlay").onclick = async () => {
-
-    const details = await fetch(
-      `https://api.themoviedb.org/3/movie/${movie.id}/external_ids?api_key=${tmdbKey}`
-    );
-
-    const ids = await details.json();
-
-    loadMovie(ids.imdb_id);
-  };
-}
-
-async function populateRow(endpoint, elementId, type){
-
-  const res = await fetch(endpoint);
-  const data = await res.json();
-
-  const row = document.getElementById(elementId);
-
-  data.results.slice(0,15).forEach(async item => {
-
-    const card = document.createElement("div");
-
-    card.className = "card";
-
-    card.innerHTML = `
-      <img src="https://image.tmdb.org/t/p/w500${item.poster_path}">
-      <p>${item.title || item.name}</p>
-    `;
-
-    card.onclick = async () => {
-
-      const mediaType = type === "tv" ? "tv" : "movie";
-
-      const details = await fetch(
-        `https://api.themoviedb.org/3/${mediaType}/${item.id}/external_ids?api_key=${tmdbKey}`
-      );
-
-      const ids = await details.json();
-
-      if(type === "tv"){
-        loadTV(ids.imdb_id);
-      } else {
-        loadMovie(ids.imdb_id);
-      }
+    btn.onclick = () => {
+      input.value = item.Title;
+      selectSuggestion(item);
     };
 
-    row.appendChild(card);
+    similarContainer.appendChild(btn);
   });
 }
-
-function loadTrending(){
-  populateRow(
-    `https://api.themoviedb.org/3/trending/all/week?api_key=${tmdbKey}`,
-    "trendingRow",
-    "movie"
-  );
-}
-
-function loadPopularMovies(){
-  populateRow(
-    `https://api.themoviedb.org/3/movie/popular?api_key=${tmdbKey}`,
-    "movieRow",
-    "movie"
-  );
-}
-
-function loadPopularTV(){
-  populateRow(
-    `https://api.themoviedb.org/3/tv/popular?api_key=${tmdbKey}`,
-    "tvRow",
-    "tv"
-  );
-}
 </script>
+
+<button
+  id="reportProblemBtn"
+  onclick="window.open('https://docs.google.com/forms/d/e/1FAIpQLSfeujs0epQgn80vrJM5ZkH0fMoRDabe809LUx_7dPyNXWowhQ/viewform', '_blank')"
+>
+  ⚠️ Report a Problem
+</button>
+
 </body>
 </html>
