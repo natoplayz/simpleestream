@@ -368,7 +368,7 @@ function loadMovie(imdbID){
   playerContainer.style.display = "block";
 
   player.src =
-    `https://vidsrc.ru/movie/${imdbID}?autoplay=true&colour=00ff9d`;
+    `https://vsembed.su/movie/${imdbID}?autoplay=true&colour=00ff9d`;
 
   window.scrollTo({
     top: playerContainer.offsetTop - 20,
@@ -422,7 +422,7 @@ async function loadEpisodes(imdbID, season){
   episodesContainer.innerHTML = "";
 
   player.src =
-    `https://vidsrc.ru/tv/${imdbID}/${season}/1?autoplay=true`;
+    `https://vsembed.su/tv/${imdbID}/${season}/1?autoplay=true`;
 
   data.Episodes?.forEach((episode, index) => {
 
@@ -434,7 +434,7 @@ async function loadEpisodes(imdbID, season){
     btn.onclick = () => {
 
       player.src =
-        `https://vidsrc.ru/tv/${imdbID}/${season}/${index + 1}?autoplay=true`;
+        `https://vsembed.su/tv/${imdbID}/${season}/${index + 1}?autoplay=true`;
 
       if(currentEpisodeButton){
         currentEpisodeButton.classList.remove("selected");
