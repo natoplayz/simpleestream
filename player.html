@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Watch — SimpleeStream</title>
+
+    <link rel="stylesheet" href="/styles.css">
+
+</head>
+
+
+<body class="player-page">
+
+
+<header class="navbar">
+
+    <a href="/" class="logo">
+
+        <span class="logo-mark">∞</span>
+
+        <span>SimpleeStream</span>
+
+    </a>
+
+
+    <nav class="desktop-nav">
+
+        <a href="/" class="nav-link">
+            Home
+        </a>
+
+        <a href="/#popular" class="nav-link">
+            Browse
+        </a>
+
+    </nav>
+
+
+    <div class="nav-actions">
+
+        <button
+            class="icon-button"
+            id="playerSearchToggle"
+        >
+            <svg viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="7"></circle>
+                <path d="M16.5 16.5L22 22"></path>
+            </svg>
+        </button>
+
+        <button class="language-button">
+            🇺🇸 EN
+        </button>
+
+        <button class="profile-button">
+
+            <svg viewBox="0 0 24 24">
+
+                <circle
+                    cx="12"
+                    cy="8"
+                    r="4"
+                ></circle>
+
+                <path
+                    d="M4 22c0-4.4 3.6-7 8-7s8 2.6 8 7"
+                ></path>
+
+            </svg>
+
+        </button>
+
+    </div>
+
+</header>
+
+
+<main class="player-container">
+
+    <div class="player-top">
+
+        <a href="/" class="back-button">
+            ← Back
+        </a>
+
+    </div>
+
+
+    <section class="player-wrapper">
+
+        <div class="player-loading" id="playerLoading">
+
+            <div class="loading-spinner"></div>
+
+            <p>Loading player...</p>
+
+        </div>
+
+
+        <iframe
+            id="player"
+            allowfullscreen
+            allow="autoplay; fullscreen; encrypted-media"
+        ></iframe>
+
+    </section>
+
+
+    <section class="watch-info">
+
+        <div class="watch-main">
+
+            <div class="watch-heading">
+
+                <div>
+
+                    <div
+                        class="watch-type"
+                        id="watchType"
+                    >
+                        MOVIE
+                    </div>
+
+                    <h1 id="watchTitle">
+                        Loading...
+                    </h1>
+
+                </div>
+
+            </div>
+
+
+            <p
+                class="watch-description"
+                id="watchDescription"
+            ></p>
+
+
+            <div
+                class="watch-meta"
+                id="watchMeta"
+            ></div>
+
+        </div>
+
+
+        <!-- TV CONTROLS -->
+
+        <div
+            class="episode-panel"
+            id="episodePanel"
+        >
+
+            <div class="episode-heading">
+
+                <h2>Episodes</h2>
+
+                <select id="seasonSelect"></select>
+
+            </div>
+
+
+            <div
+                class="episodes"
+                id="episodesContainer"
+            ></div>
+
+        </div>
+
+    </section>
+
+
+    <section class="content-section player-similar">
+
+        <div class="section-heading">
+
+            <div>
+
+                <h2>More Like This</h2>
+
+                <p>Other titles you might enjoy</p>
+
+            </div>
+
+        </div>
+
+        <div
+            class="movie-row"
+            id="similarContainer"
+        ></div>
+
+    </section>
+
+</main>
+
+
+<button
+    id="reportProblemBtn"
+    onclick="window.open('https://docs.google.com/forms/d/e/1FAIpQLSfeujs0epQgn80vrJM5ZkH0fMoRDabe809LUx_7dPyNXWowhQ/viewform', '_blank')"
+>
+    ⚠️ Report a Problem
+</button>
+
+
+<script src="/player.js"></script>
+
+</body>
+
+</html>
