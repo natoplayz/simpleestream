@@ -2,7 +2,7 @@
    SIMPLEESTREAM PLAYER
 ========================================================= */
 
-
+const BASE_PATH = "/simplestream/";
 const OMDB_API_KEY = "b3aa6957";
 
 
@@ -701,7 +701,7 @@ function updateURL() {
 
 
     const newURL =
-        `/player/${slug}?${newParams.toString()}`;
+        `${BASE_PATH}player/${slug}?${newParams.toString()}`;
 
 
     history.replaceState(
@@ -922,7 +922,7 @@ function createSimilarCard(
 
 
             window.location.href =
-                `/player/${slug}?${newParams.toString()}`;
+    `${BASE_PATH}player/${slug}?${newParams.toString()}`;
 
         };
 
@@ -1031,7 +1031,7 @@ if (playerSearchToggle) {
             */
 
             window.location.href =
-                "/?search=1";
+    `${BASE_PATH}?search=1`;
 
         }
     );
