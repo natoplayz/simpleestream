@@ -1,11 +1,11 @@
 /* =========================================================
-   SIMPLEESTREAM HOME
+   ESTREAM HOME
 ========================================================= */
 
 const OMDB_API_KEY = "b3aa6957";
 const TMDB_API_KEY = "355c7191de5cb3f569b2a6b34cc274bc";
 
-const BASE_PATH = "/simplestream/";
+const BASE_PATH = "/simpleestream/";
 
 
 const TMDB_IMAGE = "https://image.tmdb.org/t/p/w780";
@@ -555,7 +555,7 @@ function showHero(index) {
 
     heroDescription.textContent =
         item.overview ||
-        "Discover this title on SimpleeStream.";
+        "Discover this title on eStream.";
 
 
     heroMeta.innerHTML = `
