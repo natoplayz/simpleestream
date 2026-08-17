@@ -2,7 +2,6 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
 
     <meta
@@ -13,68 +12,54 @@
     <title>SimpleeStream</title>
 
     <script>
-
         /*
-            GitHub Pages sends unknown URLs
-            to this file.
+         * GitHub Pages project-site routing
+         *
+         * If the requested URL is:
+         *
+         * /simpleestream/player/lioness
+         *
+         * GitHub Pages serves this 404 document.
+         *
+         * We then redirect to player.html while
+         * preserving the movie slug and query data.
+         */
 
-            Example:
+        const BASE_PATH = "/simplestream/";
 
-            /simpleestream/player/lioness
+        const path = window.location.pathname;
 
-            becomes this 404 page.
+        const playerPrefix =
+            BASE_PATH + "player/";
 
-            We redirect the browser to the
-            actual player.html while preserving
-            all query parameters.
-        */
-
-        const base =
-            "/simplestream/";
-
-        const path =
-            window.location.pathname;
-
-        const playerMatch =
-            path.match(
-                /\/simpleestream\/player\/([^/]+)/
-            );
-
-
-        if (playerMatch) {
+        if (path.startsWith(playerPrefix)) {
 
             const slug =
-                playerMatch[1];
+                path.substring(playerPrefix.length);
 
-
-            const params =
+            const query =
                 window.location.search;
 
+            const destination =
+                BASE_PATH +
+                "player.html?slug=" +
+                encodeURIComponent(slug) +
+                query;
 
-            window.location.replace(
-                `${base}player.html?slug=${encodeURIComponent(slug)}${params}`
-            );
+            window.location.replace(destination);
+
+        } else {
+
+            window.location.replace(BASE_PATH);
 
         }
-
-        else {
-
-            window.location.replace(
-                base
-            );
-
-        }
-
     </script>
 
 </head>
 
-
 <body>
 
-    <p>
-        Loading SimpleeStream...
-    </p>
+    <p>Loading SimpleeStream...</p>
 
 </body>
 
