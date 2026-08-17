@@ -2,20 +2,10 @@
    SIMPLEESTREAM HOME
 ========================================================= */
 
-
-/*
-    Your existing OMDb API key.
-*/
 const OMDB_API_KEY = "b3aa6957";
-
-
-/*
-    ADD YOUR TMDB API KEY HERE.
-
-    You can get one from:
-    https://www.themoviedb.org/settings/api
-*/
 const TMDB_API_KEY = "355c7191de5cb3f569b2a6b34cc274bc";
+
+const BASE_PATH = "/simplestream/";
 
 
 const TMDB_IMAGE = "https://image.tmdb.org/t/p/w780";
@@ -464,7 +454,7 @@ function openPlayer(
 
 
     window.location.href =
-        `/player/${slug}?${params.toString()}`;
+    `${BASE_PATH}player/${slug}?${params.toString()}`;
 }
 
 
@@ -962,7 +952,7 @@ async function selectSearchResult(
 
 
     window.location.href =
-        `/player/${slug}?${params.toString()}`;
+        `${BASE_PATH}player/${slug}?${params.toString()}`;
 }
 
 
