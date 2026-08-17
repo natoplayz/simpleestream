@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SimpleeStream</title>
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<header class="navbar">
+    <a href="/" class="logo">
+        <span class="logo-mark">∞</span>
+        <span>SimpleeStream</span>
+    </a>
+
+    <nav class="desktop-nav">
+        <a href="/" class="nav-link active">Home</a>
+        <a href="#popular" class="nav-link">Browse</a>
+    </nav>
+
+    <div class="nav-actions">
+
+        <button
+            class="icon-button"
+            id="searchToggle"
+            aria-label="Search"
+        >
+            <svg viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="7"></circle>
+                <path d="M16.5 16.5L22 22"></path>
+            </svg>
+        </button>
+
+        <button class="language-button">
+            <span>🇺🇸</span>
+            <span>EN</span>
+        </button>
+
+        <button class="profile-button" aria-label="Profile">
+            <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="8" r="4"></circle>
+                <path d="M4 22c0-4.4 3.6-7 8-7s8 2.6 8 7"></path>
+            </svg>
+        </button>
+
+    </div>
+</header>
+
+
+<!-- SEARCH -->
+
+<section class="search-panel" id="searchPanel">
+
+    <div class="search-inner">
+
+        <div class="large-search">
+            <svg viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="7"></circle>
+                <path d="M16.5 16.5L22 22"></path>
+            </svg>
+
+            <input
+                id="searchInput"
+                type="text"
+                placeholder="Search for a movie or TV show..."
+                autocomplete="off"
+            >
+
+            <button id="closeSearch">ESC</button>
+        </div>
+
+        <div id="suggestions"></div>
+
+    </div>
+
+</section>
+
+
+<main>
+
+    <!-- HERO -->
+
+    <section class="hero" id="hero">
+
+        <div class="hero-backdrop"></div>
+
+        <div class="hero-gradient"></div>
+
+        <div class="hero-content">
+
+            <div class="hero-meta" id="heroMeta">
+                <span class="rating">★ 8.0</span>
+                <span>2023</span>
+            </div>
+
+            <h1 id="heroTitle">Lioness</h1>
+
+            <p id="heroDescription">
+                Cruz Manuelos, a rough-around-the-edges but passionate young
+                Marine, is recruited to join the CIA's Lioness Engagement Team.
+            </p>
+
+            <div class="hero-buttons">
+
+                <button
+                    class="primary-button"
+                    id="heroWatch"
+                >
+                    <span>▶</span>
+                    Watch Now
+                </button>
+
+                <button
+                    class="secondary-button"
+                    id="heroDetails"
+                >
+                    More Info
+                </button>
+
+            </div>
+
+        </div>
+
+        <div class="hero-dots" id="heroDots"></div>
+
+    </section>
+
+
+    <!-- CONTENT -->
+
+    <section class="content-section" id="popular">
+
+        <div class="section-heading">
+
+            <div>
+                <h2>Popular</h2>
+                <p>What everyone's watching</p>
+            </div>
+
+            <div class="section-arrows">
+                <button class="carousel-arrow" data-direction="-1">‹</button>
+                <button class="carousel-arrow" data-direction="1">›</button>
+            </div>
+
+        </div>
+
+        <div class="movie-row" id="popularMovies"></div>
+
+    </section>
+
+
+    <section class="content-section">
+
+        <div class="section-heading">
+
+            <div>
+                <h2>Trending Today</h2>
+                <p>Titles getting attention right now</p>
+            </div>
+
+        </div>
+
+        <div class="movie-row" id="trendingMovies"></div>
+
+    </section>
+
+
+    <section class="content-section">
+
+        <div class="section-heading">
+
+            <div>
+                <h2>Top Rated</h2>
+                <p>Highly rated movies and shows</p>
+            </div>
+
+        </div>
+
+        <div class="movie-row" id="topRatedMovies"></div>
+
+    </section>
+
+
+    <section class="content-section">
+
+        <div class="section-heading">
+
+            <div>
+                <h2>Recently Added</h2>
+                <p>Find something new to watch</p>
+            </div>
+
+        </div>
+
+        <div class="movie-row" id="recentMovies"></div>
+
+    </section>
+
+</main>
+
+
+<!-- DETAILS MODAL -->
+
+<div class="modal" id="detailsModal">
+
+    <div class="modal-backdrop" id="modalBackdrop"></div>
+
+    <div class="details-modal">
+
+        <button class="modal-close" id="modalClose">×</button>
+
+        <div class="details-image" id="modalImage"></div>
+
+        <div class="details-content">
+
+            <div class="hero-meta" id="modalMeta"></div>
+
+            <h2 id="modalTitle"></h2>
+
+            <p id="modalDescription"></p>
+
+            <div class="modal-actions">
+
+                <button
+                    class="primary-button"
+                    id="modalWatch"
+                >
+                    ▶ Watch
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<button
+    id="reportProblemBtn"
+    onclick="window.open('https://docs.google.com/forms/d/e/1FAIpQLSfeujs0epQgn80vrJM5ZkH0fMoRDabe809LUx_7dPyNXWowhQ/viewform', '_blank')"
+>
+    ⚠️ Report a Problem
+</button>
+
+
+<script src="app.js"></script>
+
+</body>
+</html>
