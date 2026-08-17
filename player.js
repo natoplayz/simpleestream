@@ -2,7 +2,7 @@
    SIMPLEESTREAM PLAYER
 ========================================================= */
 
-const BASE_PATH = "/simpleestream/";
+const BASE_PATH = "/simpleeeeestream/";
 const OMDB_API_KEY = "b3aa6957";
 
 
