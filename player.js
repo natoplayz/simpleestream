@@ -2,7 +2,7 @@
    SIMPLEESTREAM PLAYER
 ========================================================= */
 
-const BASE_PATH = "/simplestream/";
+const BASE_PATH = "/simpleestream/";
 const OMDB_API_KEY = "b3aa6957";
 
 
@@ -85,12 +85,15 @@ const params =
     url.searchParams;
 
 
-const imdbID =
+let imdbID =
     params.get("imdb");
 
-
-const mediaType =
+let mediaType =
     params.get("type") || "movie";
+
+const slug =
+    params.get("slug") ||
+    getSlugFromPath
 
 
 let currentSeason =
@@ -117,22 +120,52 @@ let currentEpisodeData =
    VALIDATE
 ========================================================= */
 
-if (!imdbID) {
+if (imdbID) {
+
+    loadTitle();
+
+} else if (slug) {
+
+    initialiseFromSlug();
+
+} else {
 
     showPlayerError(
         "No title was specified."
     );
 
-} else {
-
-    loadTitle();
-
-}
 
 
 /* =========================================================
    LOAD TITLE
 ========================================================= */
+
+   async function initialiseFromSlug() {
+
+    const result =
+        await findTitleBySlug(slug);
+
+    if (!result) {
+
+        showPlayerError(
+            "This title could not be found."
+        );
+
+        return;
+
+    }
+
+    imdbID =
+        result.imdbID;
+
+    mediaType =
+        result.Type === "series"
+            ? "series"
+            : "movie";
+
+    loadTitle();
+
+}
 
 async function loadTitle() {
 
@@ -727,7 +760,7 @@ function saveState(
     try {
 
         localStorage.setItem(
-            "simplestream:lastPlayed",
+            "simpleestream:lastPlayed",
             JSON.stringify({
                 ...state,
                 savedAt: Date.now()
@@ -978,7 +1011,7 @@ function showPlayerError(
             </div>
 
             <a
-                href="/"
+                href="/simpleestream/"
                 style="
                     display:inline-block;
                     margin-top:20px;
@@ -1071,8 +1104,19 @@ function getSlugFromPath() {
             .split("/")
             .filter(Boolean);
 
+    const playerIndex =
+        parts.indexOf("player");
 
-    return parts[1] || "watch";
+    if (
+        playerIndex !== -1 &&
+        parts[playerIndex + 1]
+    ) {
+
+        return parts[playerIndex + 1];
+
+    }
+
+    return null;
 
 }
 
@@ -1106,4 +1150,60 @@ function escapeHTML(text) {
             "&#039;"
         );
 
+}
+
+async function findTitleBySlug(slug) {
+
+    if (!slug) {
+        return null;
+    }
+
+    const query =
+        slug
+            .replace(/-/g, " ")
+            .trim();
+
+    const url =
+        `https://www.omdbapi.com/?apikey=${OMDB_API_KEY}&s=${encodeURIComponent(query)}`;
+
+    try {
+
+        const response =
+            await fetch(url);
+
+        const data =
+            await response.json();
+
+        if (
+            data.Response === "False" ||
+            !data.Search ||
+            !data.Search.length
+        ) {
+            return null;
+        }
+
+        /*
+         * Prefer an exact title match.
+         */
+
+        const exact =
+            data.Search.find(item =>
+                slugify(item.Title) === slug
+            );
+
+        if (exact) {
+            return exact;
+        }
+
+        return data.Search[0];
+
+    } catch (error) {
+
+        console.error(
+            "Unable to find title:",
+            error
+        );
+
+        return null;
+    }
 }
