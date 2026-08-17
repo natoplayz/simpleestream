@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>SimpleeStream</title>
+
+    <script>
+
+        /*
+            GitHub Pages sends unknown URLs
+            to this file.
+
+            Example:
+
+            /simpleestream/player/lioness
+
+            becomes this 404 page.
+
+            We redirect the browser to the
+            actual player.html while preserving
+            all query parameters.
+        */
+
+        const base =
+            "/simplestream/";
+
+        const path =
+            window.location.pathname;
+
+        const playerMatch =
+            path.match(
+                /\/simpleestream\/player\/([^/]+)/
+            );
+
+
+        if (playerMatch) {
+
+            const slug =
+                playerMatch[1];
+
+
+            const params =
+                window.location.search;
+
+
+            window.location.replace(
+                `${base}player.html?slug=${encodeURIComponent(slug)}${params}`
+            );
+
+        }
+
+        else {
+
+            window.location.replace(
+                base
+            );
+
+        }
+
+    </script>
+
+</head>
+
+
+<body>
+
+    <p>
+        Loading SimpleeStream...
+    </p>
+
+</body>
+
+</html>
