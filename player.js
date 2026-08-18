@@ -1207,6 +1207,4 @@ async function findTitleBySlug(slug) {
 
         return null;
     }
-}
-
-   
+};
