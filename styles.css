@@ -767,6 +767,8 @@ a {
     position: relative;
 
     aspect-ratio: 2 / 3;
+    
+    width: 100%;
 
     overflow: hidden;
 
