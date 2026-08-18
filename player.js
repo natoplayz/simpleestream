@@ -80,10 +80,8 @@ const playerSearchToggle =
 const url =
     new URL(window.location.href);
 
-
 const params =
     url.searchParams;
-
 
 let imdbID =
     params.get("imdb");
@@ -92,8 +90,7 @@ let mediaType =
     params.get("type") || "movie";
 
 const slug =
-    params.get("slug") ||
-    getSlugFromPath()
+    getSlugFromPath();
 
 
 let currentSeason =
@@ -124,14 +121,10 @@ if (imdbID) {
 
     loadTitle();
 
-} else if (slug) {
-
-    initialiseFromSlug();
-
 } else {
 
     showPlayerError(
-        "No title was specified."
+        "No movie or TV show was specified."
     );
 
 }
