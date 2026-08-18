@@ -40,11 +40,16 @@
             const query =
                 window.location.search;
 
-            const destination =
-                BASE_PATH +
-                "player.html?slug=" +
-                encodeURIComponent(slug) +
-                query;
+            const cleanQuery =
+    query.startsWith("?")
+        ? query.substring(1)
+        : query;
+
+const destination =
+    BASE_PATH +
+    "player.html?slug=" +
+    encodeURIComponent(slug) +
+    (cleanQuery ? "&" + cleanQuery : "");
 
             window.location.replace(destination);
 
