@@ -93,7 +93,7 @@ let mediaType =
 
 const slug =
     params.get("slug") ||
-    getSlugFromPath
+    getSlugFromPath()
 
 
 let currentSeason =
@@ -134,6 +134,7 @@ if (imdbID) {
         "No title was specified."
     );
 
+}
 
 
 /* =========================================================
@@ -1207,4 +1208,4 @@ async function findTitleBySlug(slug) {
 
         return null;
     }
-};
+}
