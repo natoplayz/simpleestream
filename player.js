@@ -345,10 +345,7 @@ function setupMovie(
 
 
     player.src =
-        `https://vidsrc.me/embed/${imdbID}`;
-
-
-    markPlayerLoaded();
+        `https://vsembed.su/embed/movie/${encodeURIComponent(imdbID)}`;
 
 
     saveState({
@@ -362,7 +359,6 @@ function setupMovie(
     });
 
 }
-
 
 /* =========================================================
    TV
@@ -642,9 +638,6 @@ function playEpisode(
 
     player.src =
         `https://vsembed.su/embed/tv?imdb=${encodeURIComponent(imdbID)}&season=${currentSeason}&episode=${currentEpisode}`;
-
-
-    markPlayerLoaded();
 
 
     highlightEpisode();
@@ -1071,6 +1064,14 @@ if (playerSearchToggle) {
 
 }
 
+   player.addEventListener(
+    "load",
+    () => {
+
+        markPlayerLoaded();
+
+    }
+);
 
 /* =========================================================
    HELPERS
@@ -1207,3 +1208,5 @@ async function findTitleBySlug(slug) {
         return null;
     }
 }
+
+   
