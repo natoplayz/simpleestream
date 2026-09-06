@@ -171,17 +171,6 @@ observer.observe(document.body, {
     subtree: true
 });
 
-window.addEventListener("DOMContentLoaded", () => {
-    makeFocusable();
-
-    setTimeout(() => {
-        const elements = getFocusableElements();
-
-        if (
-            elements.length &&
-            !elements.includes(document.activeElement)
-        ) {
-            elements[0].focus();
-        }
-    }, 300);
+document.addEventListener("focusin", (event) => {
+    console.log("TV FOCUS:", event.target);
 });
