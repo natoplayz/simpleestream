@@ -1,12 +1,11 @@
 const TV_SELECTOR = [
-    "a",
+    "a[href]",
     "button",
     "input",
     "select",
-    "textarea",
     ".movie-card",
     ".episode-btn",
-    "[data-tv-focus]"
+    "[data-tv-focus='true']"
 ].join(",");
 
 function getFocusableElements() {
