@@ -717,6 +717,9 @@ function openSearch() {
         "open"
     );
 
+    // Allow TV remote to focus search controls only while search is open
+    searchInput.setAttribute("tabindex", "0");
+    closeSearch.setAttribute("tabindex", "0");
 
     setTimeout(
         () => searchInput.focus(),
@@ -724,13 +727,18 @@ function openSearch() {
     );
 }
 
-
 function closeSearchPanel() {
 
     searchPanel.classList.remove(
         "open"
     );
 
+    // Remove hidden search controls from TV navigation
+    searchInput.setAttribute("tabindex", "-1");
+    closeSearch.setAttribute("tabindex", "-1");
+
+    // Put focus back onto the actual search icon
+    searchToggle.focus();
 }
 
 
