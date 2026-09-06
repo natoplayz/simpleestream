@@ -24,9 +24,15 @@ function getFocusableElements() {
 
 function makeFocusable() {
     getFocusableElements().forEach(el => {
-        if (!el.hasAttribute("tabindex")) {
-            el.setAttribute("tabindex", "0");
-        }
+        el.setAttribute("tabindex", "0");
+    });
+
+    // Explicitly prevent decorative / non-interactive elements
+    // from ever becoming remote focus targets.
+    document.querySelectorAll(
+        ".backdrop, .hero-backdrop, .hero-image, .background, [data-tv-focus='false']"
+    ).forEach(el => {
+        el.setAttribute("tabindex", "-1");
     });
 }
 
