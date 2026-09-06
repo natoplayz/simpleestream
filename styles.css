@@ -1540,4 +1540,45 @@ a {
         font-size: 11px;
     }
 
+    /* ================================
+   TV / CHROMECAST REMOTE FOCUS
+================================ */
+
+a:focus,
+button:focus,
+input:focus,
+select:focus,
+.movie-card:focus,
+.episode-btn:focus,
+[data-tv-focus]:focus {
+    outline: 3px solid #ffffff;
+    outline-offset: 4px;
+}
+
+/* Movie posters */
+.movie-card {
+    transition:
+        transform 0.16s ease,
+        box-shadow 0.16s ease;
+}
+
+.movie-card:focus {
+    transform: scale(1.07);
+    z-index: 20;
+    box-shadow: 0 0 0 3px #ffffff;
+    outline: none;
+}
+
+/* Buttons */
+button:focus,
+.episode-btn:focus {
+    transform: scale(1.05);
+}
+
+/* Search/input */
+input:focus {
+    outline: 3px solid #ffffff;
+    outline-offset: 3px;
+}
+
 }
