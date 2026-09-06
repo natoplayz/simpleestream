@@ -12,18 +12,46 @@ function getFocusableElements() {
     return [...document.querySelectorAll(TV_SELECTOR)].filter(el => {
         const style = window.getComputedStyle(el);
 
-        return (
-            style.display !== "none" &&
-            style.visibility !== "hidden" &&
-            !el.disabled &&
-            el.offsetWidth > 0 &&
-            el.offsetHeight > 0
-        );
+        // Ignore hidden elements
+        if (
+            style.display === "none" ||
+            style.visibility === "hidden" ||
+            el.disabled ||
+            el.offsetWidth <= 0 ||
+            el.offsetHeight <= 0
+        ) {
+            return false;
+        }
+
+        // Ignore anything explicitly marked tabindex="-1"
+        if (el.getAttribute("tabindex") === "-1") {
+            return false;
+        }
+
+        // IMPORTANT:
+        // Search controls must NOT be navigable unless search is open
+        if (
+            (el.id === "searchInput" || el.id === "closeSearch") &&
+            !document.getElementById("searchPanel")?.classList.contains("open")
+        ) {
+            return false;
+        }
+
+        return true;
     });
 }
 
 function makeFocusable() {
-    getFocusableElements().forEach(el => {
+    document.querySelectorAll(TV_SELECTOR).forEach(el => {
+
+        // Never automatically enable the hidden search controls
+        if (
+            el.id === "searchInput" ||
+            el.id === "closeSearch"
+        ) {
+            return;
+        }
+
         if (!el.hasAttribute("tabindex")) {
             el.setAttribute("tabindex", "0");
         }
