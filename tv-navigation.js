@@ -184,6 +184,17 @@ document.addEventListener("keydown", event => {
     }
 });
 
+// Search controls start disabled for TV navigation
+const tvSearchInput = document.getElementById("searchInput");
+const tvCloseSearch = document.getElementById("closeSearch");
+
+if (tvSearchInput) {
+    tvSearchInput.setAttribute("tabindex", "-1");
+}
+
+if (tvCloseSearch) {
+    tvCloseSearch.setAttribute("tabindex", "-1");
+}
 const observer = new MutationObserver(() => {
     makeFocusable();
 });
