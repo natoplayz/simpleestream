@@ -4,6 +4,7 @@
 
 const BASE_PATH = "/simpleestream/";
 const OMDB_API_KEY = "b3aa6957";
+const TMDB_API_KEY = "355c7191de5cb3f569b2a6b34cc274bc";
 
 
 /* =========================================================
