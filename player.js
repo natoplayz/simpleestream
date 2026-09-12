@@ -625,6 +625,26 @@ async function loadEpisodes() {
 }
 
 
+function highlightEpisode() {
+
+    document
+
+        .querySelectorAll(".episode-button")
+
+        .forEach((button, index) => {
+
+            button.classList.toggle(
+
+                "selected",
+
+                index + 1 === currentEpisode
+
+            );
+
+        });
+
+}
+
 /* =========================================================
    PLAY EPISODE
 ========================================================= */
