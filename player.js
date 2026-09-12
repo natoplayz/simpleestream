@@ -463,27 +463,55 @@ async function loadEpisodes() {
         </div>
     `;
 
-
     try {
 
-        const response =
-            await fetch(
-                `https://www.omdbapi.com/?apikey=${OMDB_API_KEY}&i=${encodeURIComponent(imdbID)}&Season=${currentSeason}`
+        /*
+            Convert IMDb ID -> TMDB TV ID
+        */
+        const findResponse = await fetch(
+            `https://api.themoviedb.org/3/find/${encodeURIComponent(imdbID)}?api_key=${TMDB_API_KEY}&external_source=imdb_id`
+        );
+
+        if (!findResponse.ok) {
+            throw new Error(
+                `TMDB lookup failed: ${findResponse.status}`
             );
+        }
 
+        const findData =
+            await findResponse.json();
 
-        const data =
-            await response.json();
+        const show =
+            findData.tv_results?.[0];
 
+        if (!show) {
+            throw new Error(
+                "Could not find TV show on TMDB."
+            );
+        }
 
-        episodesContainer.innerHTML =
-            "";
+        /*
+            Load requested season
+        */
+        const seasonResponse = await fetch(
+            `https://api.themoviedb.org/3/tv/${show.id}/season/${currentSeason}?api_key=${TMDB_API_KEY}&language=en-US`
+        );
 
+        if (!seasonResponse.ok) {
+            throw new Error(
+                `TMDB season failed: ${seasonResponse.status}`
+            );
+        }
 
-        if (
-            data.Response === "False" ||
-            !data.Episodes
-        ) {
+        const seasonData =
+            await seasonResponse.json();
+
+        const episodes =
+            seasonData.episodes || [];
+
+        episodesContainer.innerHTML = "";
+
+        if (!episodes.length) {
 
             episodesContainer.innerHTML = `
                 <div style="
@@ -497,54 +525,45 @@ async function loadEpisodes() {
             return;
         }
 
-
         /*
-            If someone opens an invalid
-            episode number, use episode 1.
+            Make sure selected episode exists
         */
-
         if (
-            currentEpisode >
-            data.Episodes.length
+            !episodes.some(
+                episode =>
+                    episode.episode_number ===
+                    currentEpisode
+            )
         ) {
-
-            currentEpisode = 1;
-
+            currentEpisode =
+                episodes[0].episode_number;
         }
 
-
         currentEpisodeData =
-            data.Episodes;
+            episodes;
 
-
-        data.Episodes.forEach(
-            (episode, index) => {
+        episodes.forEach(
+            episode => {
 
                 const episodeNumber =
-                    index + 1;
-
+                    episode.episode_number;
 
                 const button =
                     document.createElement(
                         "button"
                     );
 
-
                 button.className =
                     "episode-button";
-
 
                 if (
                     episodeNumber ===
                     currentEpisode
                 ) {
-
                     button.classList.add(
                         "selected"
                     );
-
                 }
-
 
                 button.innerHTML = `
 
@@ -555,15 +574,13 @@ async function loadEpisodes() {
                     <span class="episode-name">
                         ${
                             escapeHTML(
-                                episode.Title ||
-                                "Episode " +
-                                episodeNumber
+                                episode.name ||
+                                `Episode ${episodeNumber}`
                             )
                         }
                     </span>
 
                 `;
-
 
                 button.addEventListener(
                     "click",
@@ -577,14 +594,11 @@ async function loadEpisodes() {
                     }
                 );
 
-
                 episodesContainer.appendChild(
                     button
                 );
-
             }
         );
-
 
         playEpisode(
             currentSeason,
@@ -595,9 +609,9 @@ async function loadEpisodes() {
     } catch (error) {
 
         console.error(
+            "Episode loading failed:",
             error
         );
-
 
         episodesContainer.innerHTML = `
             <div style="
@@ -607,9 +621,7 @@ async function loadEpisodes() {
                 Unable to load episodes.
             </div>
         `;
-
     }
-
 }
 
 
