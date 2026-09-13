@@ -374,73 +374,74 @@ async function setupTV(
         );
 
 
-    seasonSelect.innerHTML =
-        "";
+    seasonSelect.innerHTML = "";
 
+if (
+    currentSeason > totalSeasons
+) {
+    currentSeason = 1;
+}
 
-    for (
-        let season = 1;
-        season <= totalSeasons;
-        season++
-    ) {
+for (
+    let season = 1;
+    season <= totalSeasons;
+    season++
+) {
 
-        const option =
-            document.createElement(
-                "option"
-            );
+    const button =
+        document.createElement("button");
 
+    button.className =
+        "season-button";
 
-        option.value =
-            season;
+    button.textContent =
+        `Season ${season}`;
 
-
-        option.textContent =
-            `Season ${season}`;
-
-
-        seasonSelect.appendChild(
-            option
-        );
-
-    }
-
-
-    /*
-        If the URL contains a season,
-        restore it.
-    */
+    button.dataset.season =
+        season;
 
     if (
-        currentSeason > totalSeasons
+        season === currentSeason
     ) {
-
-        currentSeason = 1;
-
+        button.classList.add(
+            "selected"
+        );
     }
 
-
-    seasonSelect.value =
-        currentSeason;
-
-
-    seasonSelect.onchange =
+    button.addEventListener(
+        "click",
         () => {
 
             currentSeason =
-                Number(
-                    seasonSelect.value
+                season;
+
+            currentEpisode =
+                1;
+
+            document
+                .querySelectorAll(
+                    ".season-button"
+                )
+                .forEach(btn =>
+                    btn.classList.remove(
+                        "selected"
+                    )
                 );
 
-
-            currentEpisode = 1;
-
+            button.classList.add(
+                "selected"
+            );
 
             updateURL();
 
-
             loadEpisodes();
+        }
+    );
 
-        };
+    seasonSelect.appendChild(
+        button
+    );
+}
 
 
     await loadEpisodes();
