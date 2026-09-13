@@ -11,6 +11,9 @@ const TMDB_API_KEY = "355c7191de5cb3f569b2a6b34cc274bc";
    DOM
 ========================================================= */
 
+const favoriteButton =
+    document.getElementById("favoriteButton");
+
 const player =
     document.getElementById("player");
 
