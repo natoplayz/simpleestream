@@ -40,7 +40,11 @@
             <span>EN</span>
         </button>
 
-        <button class="profile-button" aria-label="Profile">
+        <button
+    class="profile-button"
+    id="profileButton"
+    aria-label="My List"
+>
             <svg viewBox="0 0 24 24">
                 <circle cx="12" cy="8" r="4"></circle>
                 <path d="M4 22c0-4.4 3.6-7 8-7s8 2.6 8 7"></path>
@@ -203,6 +207,29 @@
 
 </main>
 
+<!-- MY LIST -->
+
+<section id="myListPanel" class="my-list-panel">
+
+    <div class="my-list-header">
+
+        <h2>My List</h2>
+
+        <button
+            id="closeMyList"
+            class="my-list-close"
+        >
+            Close
+        </button>
+
+    </div>
+
+    <div
+        id="myListContainer"
+        class="my-list-grid"
+    ></div>
+
+</section>
 
 <!-- DETAILS MODAL -->
 
