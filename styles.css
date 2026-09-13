@@ -1582,3 +1582,29 @@ input:focus {
 }
 
 }
+
+.season-select {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.season-button {
+    padding: 10px 16px;
+    border: 0;
+    border-radius: 8px;
+    background: #222;
+    color: white;
+    cursor: pointer;
+}
+
+.season-button.selected {
+    background: white;
+    color: black;
+}
+
+.season-button:focus {
+    outline: 3px solid white;
+    outline-offset: 3px;
+    transform: scale(1.05);
+}
