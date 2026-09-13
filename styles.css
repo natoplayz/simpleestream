@@ -1360,6 +1360,31 @@ a {
 }
 
 
+.favorite-button {
+    padding: 11px 16px;
+
+    background: #151515;
+    color: white;
+
+    border:
+        1px solid rgba(255,255,255,0.12);
+
+    border-radius: 6px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+.favorite-button:focus {
+    outline: 3px solid white;
+    outline-offset: 4px;
+}
+
+.favorite-button:hover {
+    background: #222;
+}
+
 /* =========================
    REPORT
 ========================= */
