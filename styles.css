@@ -1656,17 +1656,30 @@ input:focus {
 
 .my-list-panel {
     position: fixed;
-    inset: 0;
 
-    z-index: 10000;
+    top: 0;
+    left: 0;
+
+    width: 100vw;
+    height: 100vh;
+
+    z-index: 999999;
 
     display: none;
 
     padding: 90px 50px 50px;
 
-    background: #050505;
+    background-color: #050505;
 
-    overflow-y: auto;
+    overflow-y: scroll;
+
+    box-sizing: border-box;
+
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
 }
 
 .my-list-panel.open {
