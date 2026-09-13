@@ -1313,10 +1313,13 @@ a {
 
 .episode-button.selected {
     background: white;
-
     color: black;
-
     border-color: white;
+}
+
+.episode-button.selected .episode-number,
+.episode-button.selected .episode-name {
+    color: black;
 }
 
 
