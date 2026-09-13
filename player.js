@@ -194,6 +194,8 @@ async function loadTitle() {
         currentShowData =
             data;
 
+       updateFavoriteButton();
+
 
         updateTitleInfo(
             data
@@ -1238,4 +1240,88 @@ async function findTitleBySlug(slug) {
 
         return null;
     }
+}
+
+function getFavorites() {
+    try {
+        return JSON.parse(
+            localStorage.getItem("simpleestream:favorites")
+        ) || [];
+    } catch (error) {
+        return [];
+    }
+}
+
+function saveFavorites(favorites) {
+    localStorage.setItem(
+        "simpleestream:favorites",
+        JSON.stringify(favorites)
+    );
+}
+
+function isFavorite() {
+    return getFavorites().some(
+        item => item.imdb === imdbID
+    );
+}
+
+function updateFavoriteButton() {
+    if (!favoriteButton) return;
+
+    if (isFavorite()) {
+        favoriteButton.textContent =
+            "In My List";
+    } else {
+        favoriteButton.textContent =
+            "Add to My List";
+    }
+}
+
+function toggleFavorite() {
+    if (!currentShowData) return;
+
+    let favorites =
+        getFavorites();
+
+    const alreadySaved =
+        favorites.some(
+            item => item.imdb === imdbID
+        );
+
+    if (alreadySaved) {
+
+        favorites =
+            favorites.filter(
+                item => item.imdb !== imdbID
+            );
+
+    } else {
+
+        favorites.push({
+            imdb: imdbID,
+            title: currentShowData.Title,
+            type:
+                currentShowData.Type === "series"
+                    ? "series"
+                    : "movie",
+            poster: currentShowData.Poster || "",
+            year: currentShowData.Year || ""
+        });
+
+    }
+
+    saveFavorites(
+        favorites
+    );
+
+    updateFavoriteButton();
+}
+
+if (favoriteButton) {
+
+    favoriteButton.addEventListener(
+        "click",
+        toggleFavorite
+    );
+
 }
