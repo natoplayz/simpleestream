@@ -1036,6 +1036,9 @@ function openMyList() {
 
     renderMyList();
 
+    myListPanel.style.display =
+        "block";
+
     myListPanel.classList.add(
         "open"
     );
@@ -1043,18 +1046,21 @@ function openMyList() {
     document.body.style.overflow =
         "hidden";
 
+    window.scrollTo(
+        0,
+        0
+    );
 
     const firstFocusable =
         myListPanel.querySelector(
             ".movie-card, button"
         );
 
-
     if (firstFocusable) {
 
         setTimeout(
             () => firstFocusable.focus(),
-            50
+            150
         );
     }
 }
@@ -1065,6 +1071,9 @@ function closeMyListPanel() {
     myListPanel.classList.remove(
         "open"
     );
+
+    myListPanel.style.display =
+        "none";
 
     document.body.style.overflow =
         "";
