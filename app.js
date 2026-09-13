@@ -94,6 +94,18 @@ const modalMeta =
 const modalWatch =
     document.getElementById("modalWatch");
 
+const profileButton =
+    document.getElementById("profileButton");
+
+const myListPanel =
+    document.getElementById("myListPanel");
+
+const myListContainer =
+    document.getElementById("myListContainer");
+
+const closeMyList =
+    document.getElementById("closeMyList");
+
 
 let debounceTimer = null;
 
@@ -750,9 +762,39 @@ document.addEventListener(
             event.key === "Escape"
         ) {
 
-            closeSearchPanel();
+            if (
+                myListPanel.classList.contains(
+                    "open"
+                )
+            ) {
 
-            closeDetails();
+                closeMyListPanel();
+
+                return;
+            }
+
+
+            if (
+                detailsModal.classList.contains(
+                    "open"
+                )
+            ) {
+
+                closeDetails();
+
+                return;
+            }
+
+
+            if (
+                searchPanel.classList.contains(
+                    "open"
+                )
+            ) {
+
+                closeSearchPanel();
+
+            }
 
         }
 
@@ -963,6 +1005,257 @@ async function selectSearchResult(
         `${BASE_PATH}player/${slug}?${params.toString()}`;
 }
 
+
+/* =========================================================
+   MY LIST
+========================================================= */
+
+function getFavorites() {
+
+    try {
+
+        return JSON.parse(
+            localStorage.getItem(
+                "simpleestream:favorites"
+            )
+        ) || [];
+
+    } catch (error) {
+
+        console.error(
+            "Could not load favourites:",
+            error
+        );
+
+        return [];
+    }
+}
+
+
+function openMyList() {
+
+    renderMyList();
+
+    myListPanel.classList.add(
+        "open"
+    );
+
+    document.body.style.overflow =
+        "hidden";
+
+
+    const firstFocusable =
+        myListPanel.querySelector(
+            ".movie-card, button"
+        );
+
+
+    if (firstFocusable) {
+
+        setTimeout(
+            () => firstFocusable.focus(),
+            50
+        );
+    }
+}
+
+
+function closeMyListPanel() {
+
+    myListPanel.classList.remove(
+        "open"
+    );
+
+    document.body.style.overflow =
+        "";
+
+    profileButton.focus();
+}
+
+
+function renderMyList() {
+
+    const favorites =
+        getFavorites();
+
+
+    myListContainer.innerHTML =
+        "";
+
+
+    if (!favorites.length) {
+
+        myListContainer.innerHTML = `
+
+            <div class="my-list-empty">
+
+                <h3>Your list is empty</h3>
+
+                <p>
+                    Add movies and TV shows
+                    from their player page.
+                </p>
+
+            </div>
+
+        `;
+
+        return;
+    }
+
+
+    favorites.forEach(
+        item => {
+
+            const card =
+                document.createElement(
+                    "article"
+                );
+
+
+            card.className =
+                "movie-card";
+
+
+            card.setAttribute(
+                "tabindex",
+                "0"
+            );
+
+
+            const poster =
+                item.poster &&
+                item.poster !== "N/A"
+                    ? item.poster
+                    : "";
+
+
+            card.innerHTML = `
+
+                <div class="movie-poster">
+
+                    ${
+                        poster
+                            ? `
+                                <img
+                                    src="${poster}"
+                                    alt="${escapeHTML(item.title)}"
+                                    loading="lazy"
+                                >
+                            `
+                            : `
+                                <div class="my-list-no-poster">
+                                    No Poster
+                                </div>
+                            `
+                    }
+
+                    <div class="movie-overlay">
+
+                        <div class="play-circle">
+                            ▶
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="movie-info">
+
+                    <div class="movie-title">
+                        ${escapeHTML(item.title)}
+                    </div>
+
+                    <div class="movie-meta">
+
+                        <span>
+                            ${escapeHTML(item.year || "—")}
+                        </span>
+
+                        <span>
+                            ${
+                                item.type === "series"
+                                    ? "TV"
+                                    : "Movie"
+                            }
+                        </span>
+
+                    </div>
+
+                </div>
+
+            `;
+
+
+            function openFavorite() {
+
+                const slug =
+                    slugify(
+                        item.title
+                    );
+
+
+                const params =
+                    new URLSearchParams({
+
+                        imdb:
+                            item.imdb,
+
+                        type:
+                            item.type
+
+                    });
+
+
+                window.location.href =
+                    `${BASE_PATH}player/${slug}?${params.toString()}`;
+            }
+
+
+            card.addEventListener(
+                "click",
+                openFavorite
+            );
+
+
+            card.addEventListener(
+                "keydown",
+                event => {
+
+                    if (
+                        event.key === "Enter" ||
+                        event.key === " "
+                    ) {
+
+                        event.preventDefault();
+
+                        openFavorite();
+                    }
+
+                }
+            );
+
+
+            myListContainer.appendChild(
+                card
+            );
+
+        }
+    );
+}
+
+
+profileButton.addEventListener(
+    "click",
+    openMyList
+);
+
+
+closeMyList.addEventListener(
+    "click",
+    closeMyListPanel
+);
 
 /* =========================================================
    CAROUSEL BUTTONS
