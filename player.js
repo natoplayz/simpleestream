@@ -565,6 +565,9 @@ async function loadEpisodes() {
                 button.className =
                     "episode-button";
 
+               button.dataset.episode =
+    episodeNumber;
+
                 if (
                     episodeNumber ===
                     currentEpisode
@@ -637,21 +640,25 @@ async function loadEpisodes() {
 function highlightEpisode() {
 
     document
+        .querySelectorAll(
+            ".episode-button"
+        )
+        .forEach(
+            button => {
 
-        .querySelectorAll(".episode-button")
+                const episodeNumber =
+                    Number(
+                        button.dataset.episode
+                    );
 
-        .forEach((button, index) => {
+                button.classList.toggle(
+                    "selected",
+                    episodeNumber ===
+                    currentEpisode
+                );
 
-            button.classList.toggle(
-
-                "selected",
-
-                index + 1 === currentEpisode
-
-            );
-
-        });
-
+            }
+        );
 }
 
 /* =========================================================
