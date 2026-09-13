@@ -1353,3 +1353,20 @@ function escapeHTML(text) {
 ========================================================= */
 
 loadHome();
+
+const pageParams =
+    new URLSearchParams(
+        window.location.search
+    );
+
+if (
+    pageParams.get("mylist") === "1"
+) {
+
+    setTimeout(
+        () => {
+            openMyList();
+        },
+        300
+    );
+}
