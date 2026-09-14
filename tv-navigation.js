@@ -208,6 +208,9 @@ if (tvSearchInput) {
 if (tvCloseSearch) {
     tvCloseSearch.setAttribute("tabindex", "-1");
 }
+
+makeFocusable();
+
 const observer = new MutationObserver(() => {
     makeFocusable();
 });
