@@ -5,7 +5,7 @@ const TV_SELECTOR = [
     "select",
     "iframe",
     ".movie-card",
-    ".episode-btn",
+    ".episode-button",
     "#suggestions > *",
     "[data-tv-focus='true']"
 ].join(",");
@@ -173,8 +173,17 @@ document.addEventListener("keydown", event => {
         case "Enter":
     const focused = document.activeElement;
 
+    if (!focused) {
+        break;
+    }
+
+    if (focused.tagName === "IFRAME") {
+        event.preventDefault();
+        focused.focus();
+        break;
+    }
+
     if (
-        focused &&
         !["A", "BUTTON", "INPUT", "SELECT"].includes(
             focused.tagName
         )
@@ -184,16 +193,6 @@ document.addEventListener("keydown", event => {
     }
 
     break;
-
-        case "Escape":
-        case "BrowserBack":
-            event.preventDefault();
-
-            if (window.history.length > 1) {
-                window.history.back();
-            }
-
-            break;
     }
 });
 
