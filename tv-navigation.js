@@ -3,6 +3,7 @@ const TV_SELECTOR = [
     "button",
     "input",
     "select",
+    "iframe",
     ".movie-card",
     ".episode-btn",
     "#suggestions > *",
