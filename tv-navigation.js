@@ -5,6 +5,7 @@ const TV_SELECTOR = [
     "select",
     ".movie-card",
     ".episode-btn",
+    "#suggestions > *",
     "[data-tv-focus='true']"
 ].join(",");
 
