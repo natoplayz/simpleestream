@@ -170,8 +170,19 @@ document.addEventListener("keydown", event => {
             break;
 
         case "Enter":
-            // The browser normally activates focused buttons/links itself.
-            break;
+    const focused = document.activeElement;
+
+    if (
+        focused &&
+        !["A", "BUTTON", "INPUT", "SELECT"].includes(
+            focused.tagName
+        )
+    ) {
+        event.preventDefault();
+        focused.click();
+    }
+
+    break;
 
         case "Escape":
         case "BrowserBack":
