@@ -44,6 +44,9 @@ const topRatedMovies =
 const recentMovies =
     document.getElementById("recentMovies");
 
+const catalogRows =
+    document.getElementById("catalogRows");
+
 
 const hero =
     document.getElementById("hero");
@@ -120,7 +123,10 @@ let heroTimer = null;
    TMDB
 ========================================================= */
 
-async function tmdbRequest(endpoint) {
+async function tmdbRequest(
+    endpoint,
+    params = {}
+) {
 
     if (
         !TMDB_API_KEY ||
@@ -134,10 +140,16 @@ async function tmdbRequest(endpoint) {
     }
 
 
+    const query =
+        new URLSearchParams({
+            api_key: TMDB_API_KEY,
+            language: "en-US",
+            ...params
+        });
+
+
     const url =
-        `https://api.themoviedb.org/3${endpoint}` +
-        `?api_key=${TMDB_API_KEY}` +
-        `&language=en-US`;
+        `https://api.themoviedb.org/3${endpoint}?${query.toString()}`;
 
 
     try {
@@ -182,12 +194,58 @@ async function loadHome() {
     }
 
 
+    const today =
+        new Date()
+            .toISOString()
+            .slice(0, 10);
+
+
+    const recentDate =
+        new Date();
+
+    recentDate.setDate(
+        recentDate.getDate() - 120
+    );
+
+
+    const recentStart =
+        recentDate
+            .toISOString()
+            .slice(0, 10);
+
+
+    const currentYear =
+        new Date().getFullYear();
+
+
     const [
         popular,
         trending,
         topRated,
-        recent
+        recent,
+
+        trendingMoviesData,
+        trendingTVData,
+
+        popularMoviesData,
+        popularTVData,
+
+        newMoviesData,
+        newTVData,
+
+        movies2026Data,
+        tv2026Data,
+
+        actionData,
+        comedyData,
+
+        australiaData,
+
+        topRatedTVData
+
     ] = await Promise.all([
+
+        /* EXISTING ROWS */
 
         tmdbRequest(
             "/trending/all/week"
@@ -203,10 +261,160 @@ async function loadHome() {
 
         tmdbRequest(
             "/movie/now_playing"
+        ),
+
+
+        /* TRENDING MOVIES */
+
+        tmdbRequest(
+            "/trending/movie/week"
+        ),
+
+
+        /* TRENDING TV */
+
+        tmdbRequest(
+            "/trending/tv/week"
+        ),
+
+
+        /* POPULAR MOVIES */
+
+        tmdbRequest(
+            "/movie/popular"
+        ),
+
+
+        /* POPULAR TV */
+
+        tmdbRequest(
+            "/tv/popular"
+        ),
+
+
+        /* NEW MOVIES */
+
+        tmdbRequest(
+            "/discover/movie",
+            {
+                "primary_release_date.gte":
+                    recentStart,
+
+                "primary_release_date.lte":
+                    today,
+
+                sort_by:
+                    "primary_release_date.desc",
+
+                region:
+                    "AU"
+            }
+        ),
+
+
+        /* NEW TV */
+
+        tmdbRequest(
+            "/discover/tv",
+            {
+                "first_air_date.gte":
+                    recentStart,
+
+                "first_air_date.lte":
+                    today,
+
+                sort_by:
+                    "first_air_date.desc"
+            }
+        ),
+
+
+        /* 2026 MOVIES */
+
+        tmdbRequest(
+            "/discover/movie",
+            {
+                primary_release_year:
+                    currentYear,
+
+                sort_by:
+                    "popularity.desc"
+            }
+        ),
+
+
+        /* 2026 TV */
+
+        tmdbRequest(
+            "/discover/tv",
+            {
+                first_air_date_year:
+                    currentYear,
+
+                sort_by:
+                    "popularity.desc"
+            }
+        ),
+
+
+        /* ACTION */
+
+        tmdbRequest(
+            "/discover/movie",
+            {
+                with_genres:
+                    "28",
+
+                sort_by:
+                    "popularity.desc"
+            }
+        ),
+
+
+        /* COMEDY */
+
+        tmdbRequest(
+            "/discover/movie",
+            {
+                with_genres:
+                    "35",
+
+                sort_by:
+                    "popularity.desc"
+            }
+        ),
+
+
+        /* AUSTRALIA */
+
+        tmdbRequest(
+            "/discover/movie",
+            {
+                "primary_release_date.gte":
+                    recentStart,
+
+                "primary_release_date.lte":
+                    today,
+
+                region:
+                    "AU",
+
+                sort_by:
+                    "popularity.desc"
+            }
+        ),
+
+
+        /* TOP RATED TV */
+
+        tmdbRequest(
+            "/tv/top_rated"
         )
 
     ]);
 
+
+    /* EXISTING HOME ROWS */
 
     renderMovieRow(
         popularMovies,
@@ -232,37 +440,113 @@ async function loadHome() {
     );
 
 
+    /* HERO */
+
     heroItems =
         (popular?.results || [])
-            .filter(item => item.backdrop_path)
+            .filter(item =>
+                (
+                    item.media_type === "movie" ||
+                    item.media_type === "tv"
+                ) &&
+                item.backdrop_path
+            )
             .slice(0, 5);
 
 
     setupHero();
 
+
+    /* NEW CATALOGUE */
+
+    renderCatalogRows([
+
+        {
+            title: "Trending Movies",
+            subtitle: "What's getting the most attention right now",
+            items:
+                trendingMoviesData?.results || []
+        },
+
+        {
+            title: "Trending TV Shows",
+            subtitle: "Shows everyone is talking about",
+            items:
+                trendingTVData?.results || []
+        },
+
+        {
+            title: "Popular Movies",
+            subtitle: "The most popular movies on TMDB",
+            items:
+                popularMoviesData?.results || []
+        },
+
+        {
+            title: "Popular TV Shows",
+            subtitle: "Popular series worth checking out",
+            items:
+                popularTVData?.results || []
+        },
+
+        {
+            title: "New Movie Releases",
+            subtitle: "Recently released movies",
+            items:
+                newMoviesData?.results || []
+        },
+
+        {
+            title: "New TV Shows",
+            subtitle: "Recently released series",
+            items:
+                newTVData?.results || []
+        },
+
+        {
+            title: `${currentYear} Movies`,
+            subtitle: `Movies released in ${currentYear}`,
+            items:
+                movies2026Data?.results || []
+        },
+
+        {
+            title: `${currentYear} TV Shows`,
+            subtitle: `TV shows released in ${currentYear}`,
+            items:
+                tv2026Data?.results || []
+        },
+
+        {
+            title: "Action Movies",
+            subtitle: "Explosions, fights and big adventures",
+            items:
+                actionData?.results || []
+        },
+
+        {
+            title: "Comedy Movies",
+            subtitle: "Something a bit more fun",
+            items:
+                comedyData?.results || []
+        },
+
+        {
+            title: "Popular New Releases in Australia",
+            subtitle: "Recent movies with Australian releases",
+            items:
+                australiaData?.results || []
+        },
+
+        {
+            title: "Top Rated TV Shows",
+            subtitle: "Highly rated series",
+            items:
+                topRatedTVData?.results || []
+        }
+
+    ]);
 }
-
-
-function showTMDBSetupMessage() {
-
-    const message = `
-        <div style="
-            padding:30px;
-            color:#777;
-            background:#101010;
-            border-radius:8px;
-            width:100%;
-        ">
-            Add your TMDB API key to
-            <strong>app.js</strong>
-            to enable the home catalogue.
-        </div>
-    `;
-
-
-    popularMovies.innerHTML = message;
-}
-
 
 /* =========================================================
    CARD RENDERING
@@ -289,6 +573,139 @@ function renderMovieRow(
             container.appendChild(card);
 
         });
+}
+
+function renderCatalogRows(rows) {
+
+    if (!catalogRows) {
+        return;
+    }
+
+
+    catalogRows.innerHTML = "";
+
+
+    rows.forEach(
+        (row, rowIndex) => {
+
+            if (
+                !row.items ||
+                !row.items.length
+            ) {
+                return;
+            }
+
+
+            const section =
+                document.createElement("section");
+
+            section.className =
+                "content-section catalog-section";
+
+
+            const rowID =
+                `catalog-row-${rowIndex}`;
+
+
+            section.innerHTML = `
+
+                <div class="section-heading">
+
+                    <div>
+
+                        <h2>
+                            ${escapeHTML(row.title)}
+                        </h2>
+
+                        <p>
+                            ${escapeHTML(row.subtitle)}
+                        </p>
+
+                    </div>
+
+                    <div class="section-arrows">
+
+                        <button
+                            class="carousel-arrow catalog-arrow"
+                            data-direction="-1"
+                            aria-label="Scroll left"
+                        >
+                            ‹
+                        </button>
+
+                        <button
+                            class="carousel-arrow catalog-arrow"
+                            data-direction="1"
+                            aria-label="Scroll right"
+                        >
+                            ›
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="movie-row"
+                    id="${rowID}"
+                ></div>
+
+            `;
+
+
+            catalogRows.appendChild(
+                section
+            );
+
+
+            const movieRow =
+                section.querySelector(
+                    `#${rowID}`
+                );
+
+
+            renderMovieRow(
+                movieRow,
+                row.items
+            );
+
+
+            section
+                .querySelectorAll(
+                    ".catalog-arrow"
+                )
+                .forEach(
+                    button => {
+
+                        button.addEventListener(
+                            "click",
+                            () => {
+
+                                const direction =
+                                    Number(
+                                        button.dataset.direction
+                                    );
+
+
+                                movieRow.scrollBy({
+
+                                    left:
+                                        direction * 700,
+
+                                    behavior:
+                                        "smooth"
+
+                                });
+
+                            }
+                        );
+
+                    }
+                );
+
+        }
+    );
 }
 
 
